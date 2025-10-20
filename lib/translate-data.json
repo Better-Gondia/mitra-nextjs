@@ -1,0 +1,442 @@
+{
+  "complaint_submitted_success": {
+    "english": "✅ Complaint submitted successfully! Your complaint ID is complaintId. We'll keep you updated on the progress.",
+    "hindi": "✅ शिकायत सफलतापूर्वक दर्ज हो गई है! आपकी शिकायत ID complaintId है। हम आपको प्रगति की जानकारी देते रहेंगे।",
+    "marathi": "✅ तक्रार यशस्वीरित्या नोंदवली गेली आहे! तुमची तक्रार आयडी complaintId आहे. आम्ही तुम्हाला प्रगतीची माहिती देत राहू."
+  },
+  "select_complaint_category": {
+    "english": "Please select the category for your complaint:",
+    "hindi": "कृपया अपनी शिकायत के लिए श्रेणी चुनें:",
+    "marathi": "कृपया तुमच्या तक्रारीसाठी श्रेणी निवडा:"
+  },
+  "ask_location": {
+    "english": "Thank you for the detailed description! Now, can you provide the location? You can share your current location, type the address manually, or skip this step.",
+    "hindi": "विस्तृत विवरण के लिए धन्यवाद! अब, क्या आप स्थान बता सकते हैं? आप अपना वर्तमान स्थान साझा कर सकते हैं, पता मैन्युअली टाइप कर सकते हैं, या इस चरण को छोड़ सकते हैं।",
+    "marathi": "तपशीलवार वर्णनासाठी धन्यवाद! आता, तुम्ही स्थान देऊ शकता का? तुम्ही तुमचे सध्याचे स्थान शेअर करू शकता, पत्ता मॅन्युअली टाइप करू शकता किंवा हा टप्पा वगळू शकता."
+  },
+  "ask_media_upload": {
+    "english": "Great! Would you like to add a photo or video (under 100mb) to help illustrate the issue? You can also skip this step. (Photos are recommended)",
+    "hindi": "बहुत बढ़िया! क्या आप इस समस्या को दिखाने के लिए कोई फोटो या वीडियो (100mb से कम) जोड़ना चाहेंगे? आप इस चरण को छोड़ भी सकते हैं। (फोटो की सिफारिश की जाती है)",
+    "marathi": "छान! तुम्हाला ही समस्या समजावून सांगण्यासाठी एखादा फोटो किंवा व्हिडिओ (100mb पेक्षा कमी) जोडायचा आहे का? तुम्ही हा टप्पा वगळूही शकता. (फोटोची शिफारस केली जाते)"
+  },
+  "ask_description": {
+    "english": "Perfect! Now please describe your complaint in detail. Explain what exactly is the problem, when you noticed it, and how it's affecting you or your community.",
+    "hindi": "बहुत अच्छा! अब कृपया अपनी शिकायत को विस्तार से समझाइए। समस्या क्या है, आपने इसे कब देखा और यह आपको या आपके समुदाय को कैसे प्रभावित कर रही है, यह बताएं।",
+    "marathi": "छान! आता कृपया तुमची तक्रार सविस्तरपणे सांगावी. नेमकी समस्या काय आहे, ती तुम्हाला कधी लक्षात आली आणि ती तुमच्यावर किंवा तुमच्या समुदायावर कशी परिणाम करत आहे हे स्पष्ट करा."
+  },
+  "roads": {
+    "english": "Roads",
+    "hindi": "सड़कें",
+    "marathi": "रस्ते"
+  },
+  "water": {
+    "english": "Water",
+    "hindi": "पानी",
+    "marathi": "पाणी"
+  },
+  "electricity": {
+    "english": "Electric",
+    "hindi": "बिजली",
+    "marathi": "वीज"
+  },
+  "sanitation": {
+    "english": "Sanitation",
+    "hindi": "स्वच्छता",
+    "marathi": "स्वच्छता"
+  },
+  "intro_message": {
+    "english": "Hi! I'm here to help you file complaints about civic issues in Gondia. Just describe the problem in your own words.",
+    "hindi": "नमस्ते! मैं आपकी मदद करने के लिए यहाँ हूँ ताकि आप गोंदिया की नागरिक समस्याओं के बारे में शिकायत दर्ज कर सकें। बस अपनी भाषा में समस्या को समझाइए।",
+    "marathi": "नमस्कार! गोंदियामधील नागरी समस्यांबद्दल तक्रार नोंदवण्यासाठी मी तुमची मदत करण्यासाठी इथे आहे. कृपया तुमच्या स्वतःच्या शब्दांत समस्या सांगा."
+  },
+  "geolocation_not_supported": {
+    "english": "Geolocation is not supported in your browser. Please type your address.",
+    "hindi": "आपका ब्राउज़र जियोलोकेशन को सपोर्ट नहीं करता है। कृपया अपना पता टाइप करें।",
+    "marathi": "तुमचा ब्राउझर जिओलोकेशनला सपोर्ट करत नाही. कृपया तुमचा पत्ता टाइप करा."
+  },
+  "fetching_location": {
+    "english": "Fetching your current location…",
+    "hindi": "आपका वर्तमान स्थान प्राप्त किया जा रहा है…",
+    "marathi": "तुमचे वर्तमान स्थान शोधले जात आहे…"
+  },
+  "location_captured_add_media": {
+    "english": "Location captured! Would you like to add a photo or video?",
+    "hindi": "स्थान दर्ज कर लिया गया है! क्या आप एक फोटो या वीडियो जोड़ना चाहेंगे?",
+    "marathi": "स्थान जतन केले आहे! तुम्हाला फोटो किंवा व्हिडिओ जोडायचा आहे का?"
+  },
+  "permission_denied_type_address": {
+    "english": "Permission denied. Please type your address manually.",
+    "hindi": "अनुमति अस्वीकृत। कृपया अपना पता मैन्युअली टाइप करें।",
+    "marathi": "परवानगी नाकारली गेली. कृपया तुमचा पत्ता स्वतः टाइप करा."
+  },
+  "unable_to_retrieve_location": {
+    "english": "Unable to retrieve location. Please type your address manually.",
+    "hindi": "स्थान प्राप्त करने में असमर्थ। कृपया अपना पता मैन्युअली टाइप करें।",
+    "marathi": "स्थान मिळवता आले नाही. कृपया तुमचा पत्ता स्वतः टाइप करा."
+  },
+  "please_type_address": {
+    "english": "Please type the address or location of the issue:",
+    "hindi": "कृपया समस्या का पता या स्थान टाइप करें:",
+    "marathi": "कृपया समस्येचा पत्ता किंवा स्थान टाइप करा:"
+  },
+  "location_skipped_add_media": {
+    "english": "Location skipped. Would you like to add a photo or video?",
+    "hindi": "स्थान छोड़ दिया गया है। क्या आप एक फोटो या वीडियो जोड़ना चाहेंगे?",
+    "marathi": "स्थान वगळले आहे. तुम्हाला फोटो किंवा व्हिडिओ जोडायचा आहे का?"
+  },
+  "edit_complaint_select_category": {
+    "english": "Let's edit your complaint. Please select the category again:",
+    "hindi": "चलिए आपकी शिकायत को संपादित करते हैं। कृपया श्रेणी चुनें:",
+    "marathi": "चला तुमची तक्रार संपादित करूया. कृपया पुन्हा श्रेणी निवडा:"
+  },
+  "share_current_location": {
+    "english": "Share Current Location",
+    "hindi": "वर्तमान स्थान साझा करें",
+    "marathi": "सध्याचे स्थान शेअर करा"
+  },
+  "type_address_manually": {
+    "english": "Type Address Manually",
+    "hindi": "पता मैन्युअली टाइप करें",
+    "marathi": "पत्ता स्वतः टाइप करा"
+  },
+  "skip_optional": {
+    "english": "Skip (Optional)",
+    "hindi": "छोड़ें (वैकल्पिक)",
+    "marathi": "वगळा (ऐच्छिक)"
+  },
+  "add_photos_videos": {
+    "english": "Add Photos/Videos",
+    "hindi": "फ़ोटो/वीडियो जोड़ें",
+    "marathi": "फोटो/व्हिडिओ जोडा"
+  },
+  "skip_and_preview": {
+    "english": "Skip & Preview",
+    "hindi": "छोड़ें और पूर्वावलोकन करें",
+    "marathi": "वगळा आणि पूर्वावलोकन करा"
+  },
+  "uploaded_files": {
+    "english": "Uploaded files:",
+    "hindi": "अपलोड की गई फ़ाइलें:",
+    "marathi": "अपलोड केलेल्या फाईली:"
+  },
+  "edit": {
+    "english": "Edit",
+    "hindi": "संपादित करें",
+    "marathi": "संपादित करा"
+  },
+  "submit": {
+    "english": "Submit",
+    "hindi": "जमा करें",
+    "marathi": "सबमिट करा"
+  },
+  "submitting": {
+    "english": "Submitting...",
+    "hindi": "जमा किया जा रहा है...",
+    "marathi": "सबमिट करत आहे..."
+  },
+  "submitting_complaint": {
+    "english": "Submitting Complaint...",
+    "hindi": "शिकायत जमा की जा रही है...",
+    "marathi": "तक्रार सबमिट केली जात आहे..."
+  },
+  "complaint_submitted_successfully": {
+    "english": "Complaint Submitted Successfully!!",
+    "hindi": "शिकायत सफलतापूर्वक जमा हो गई!!",
+    "marathi": "तक्रार यशस्वीरित्या सबमिट झाली!!"
+  },
+  "speech_not_recognized": {
+    "english": "The speech is not recognizable. Please enter the description manually.",
+    "hindi": "आवाज पहचाना नहीं गया। कृपया विवरण मैन्युअली दर्ज करें।",
+    "marathi": "बोल ओळखता आले नाहीत. कृपया वर्णन स्वतः टाइप करा."
+  },
+  "description_too_short": {
+    "english": "The description is very short.",
+    "hindi": "विवरण बहुत छोटा है।",
+    "marathi": "वर्णन खूप लहान आहे."
+  },
+  "description_too_long": {
+    "english": "The description is very long. Please keep it under 500 characters.",
+    "hindi": "विवरण बहुत लंबा है। कृपया इसे 500 अक्षरों के अंदर रखें।",
+    "marathi": "वर्णन खूप मोठं आहे. कृपया ते 500 अक्षरांपेक्षा कमी ठेवा."
+  },
+  "max_attachments": {
+    "english": "Maximum 4 attachments allowed.",
+    "hindi": "अधिकतम 4 अटैचमेंट्स की अनुमति है।",
+    "marathi": "कमाल 4 अटॅचमेंट्स अनुमत आहेत."
+  },
+  "video_too_large": {
+    "english": "Video file exceeds 100MB limit.",
+    "hindi": "वीडियो फ़ाइल 100MB की सीमा से अधिक है।",
+    "marathi": "व्हिडिओ फाइल 100MB मर्यादेपेक्षा जास्त आहे."
+  },
+  "uploading_files": {
+    "english": "Uploading Files",
+    "hindi": "फ़ाइलें अपलोड की जा रही हैं",
+    "marathi": "फायली अपलोड करत आहे"
+  },
+  "upload_failed": {
+    "english": "Upload Failed",
+    "hindi": "अपलोड विफल रहा",
+    "marathi": "अपलोड अयशस्वी"
+  },
+  "upload_successful": {
+    "english": "Upload successful",
+    "hindi": "अपलोड सफल रहा",
+    "marathi": "अपलोड यशस्वी"
+  },
+  "session_expired": {
+    "english": "Session expired, please enter your info again.",
+    "hindi": "सत्र समाप्त हो गया है, कृपया अपनी जानकारी फिर से दर्ज करें।",
+    "marathi": "सत्र संपले आहे, कृपया तुमची माहिती पुन्हा भरा."
+  },
+  "something_went_wrong": {
+    "english": "Something went wrong",
+    "hindi": "कुछ गलत हो गया",
+    "marathi": "काहीतरी चूक झाली"
+  },
+  "please_fill_all_fields": {
+    "english": "Please fill in all required fields",
+    "hindi": "कृपया सभी आवश्यक फ़ील्ड भरें",
+    "marathi": "कृपया सर्व आवश्यक माहिती भरा"
+  },
+  "name_min_length": {
+    "english": "Name must be more than 5 characters",
+    "hindi": "नाम 5 अक्षरों से अधिक होना चाहिए",
+    "marathi": "नाव 5 अक्षरांपेक्षा जास्त असावे"
+  },
+  "age_range": {
+    "english": "Age must be between 16 and 110",
+    "hindi": "आयु 16 से 110 के बीच होनी चाहिए",
+    "marathi": "वय 16 ते 110 च्या दरम्यान असावे"
+  },
+  "invalid_mobile": {
+    "english": "Please enter a valid 10-digit mobile number",
+    "hindi": "कृपया एक मान्य 10-अंकीय मोबाइल नंबर दर्ज करें",
+    "marathi": "कृपया वैध 10 अंकी मोबाइल नंबर टाका"
+  },
+  "address_min_length": {
+    "english": "Address must be more than 10 characters",
+    "hindi": "पता 10 अक्षरों से अधिक होना चाहिए",
+    "marathi": "पत्ता 10 अक्षरांपेक्षा जास्त असावा"
+  },
+  "complete_profile": {
+    "english": "Complete Profile",
+    "hindi": "प्रोफ़ाइल पूरा करें",
+    "marathi": "प्रोफाइल पूर्ण करा"
+  },
+  "name": {
+    "english": "Name",
+    "hindi": "नाम",
+    "marathi": "नाव"
+  },
+  "age": {
+    "english": "Age",
+    "hindi": "आयु",
+    "marathi": "वय"
+  },
+  "gender": {
+    "english": "Gender",
+    "hindi": "लिंग",
+    "marathi": "लिंग"
+  },
+  "male": {
+    "english": "Male",
+    "hindi": "पुरुष",
+    "marathi": "पुरुष"
+  },
+  "female": {
+    "english": "Female",
+    "hindi": "महिला",
+    "marathi": "स्त्री"
+  },
+  "other": {
+    "english": "Other",
+    "hindi": "अन्य",
+    "marathi": "इतर"
+  },
+  "phone_number": {
+    "english": "Phone Number",
+    "hindi": "फोन नंबर",
+    "marathi": "फोन नंबर"
+  },
+  "address": {
+    "english": "Address",
+    "hindi": "पता",
+    "marathi": "पत्ता"
+  },
+  "creating_profile": {
+    "english": "Creating Profile...",
+    "hindi": "प्रोफ़ाइल बनाई जा रही है...",
+    "marathi": "प्रोफाइल तयार केली जात आहे..."
+  },
+  "complete_setup": {
+    "english": "Complete Setup",
+    "hindi": "सेटअप पूरा करें",
+    "marathi": "सेटअप पूर्ण करा"
+  },
+  "enter_complete_address": {
+    "english": "Enter your complete address",
+    "hindi": "अपना पूरा पता दर्ज करें",
+    "marathi": "तुमचा संपूर्ण पत्ता टाका"
+  },
+  "enter_phone_number": {
+    "english": "Enter your phone number",
+    "hindi": "अपना फोन नंबर दर्ज करें",
+    "marathi": "तुमचा फोन नंबर टाका"
+  },
+  "select_gender": {
+    "english": "Select your gender",
+    "hindi": "अपना लिंग चुनें",
+    "marathi": "तुमचे लिंग निवडा"
+  },
+  "enter_age": {
+    "english": "Enter your age",
+    "hindi": "अपनी आयु दर्ज करें",
+    "marathi": "तुमचे वय टाका"
+  },
+  "enter_name": {
+    "english": "Enter your name",
+    "hindi": "अपना नाम दर्ज करें",
+    "marathi": "तुमचे नाव टाका"
+  },
+  "my_complaints": {
+    "english": "My Complaints",
+    "hindi": "मेरी शिकायतें",
+    "marathi": "माझ्या तक्रारी"
+  },
+  "new_complaint": {
+    "english": "New Complaint",
+    "hindi": "नई शिकायत",
+    "marathi": "नवीन तक्रार"
+  },
+  "no_complaints_yet": {
+    "english": "No complaints yet",
+    "hindi": "अभी तक कोई शिकायत नहीं",
+    "marathi": "अजून कोणतीही तक्रार नाही"
+  },
+  "submit_first_complaint": {
+    "english": "Submit your first complaint to get started and help improve your community!",
+    "hindi": "शुरुआत करने और अपने समुदाय को बेहतर बनाने में मदद करने के लिए अपनी पहली शिकायत दर्ज करें!",
+    "marathi": "सुरुवात करण्यासाठी आणि आपल्या समुदायाच्या सुधारणा करण्यासाठी तुमची पहिली तक्रार नोंदवा!"
+  },
+  "something_went_wrong_refresh": {
+    "english": "Something went wrong, Please refresh the browser",
+    "hindi": "कुछ गलत हो गया, कृपया ब्राउज़र को रिफ्रेश करें",
+    "marathi": "काहीतरी चुकले, कृपया ब्राउझर रीफ्रेश करा"
+  },
+  "gondia_public_wall": {
+    "english": "Gondia Public Wall",
+    "hindi": "गोंदिया सार्वजनिक दीवार",
+    "marathi": "गोंदिया सार्वजनिक भिंत"
+  },
+  "see_what_others_are_reporting": {
+    "english": "See what others are reporting • Co-sign to support",
+    "hindi": "देखें अन्य लोग क्या रिपोर्ट कर रहे हैं • समर्थन के लिए सह-हस्ताक्षर करें",
+    "marathi": "इतर काय रिपोर्ट करत आहेत ते पहा • समर्थनासाठी सह-हस्ताक्षर करा"
+  },
+  "no_public_complaints": {
+    "english": "No Public Complaints",
+    "hindi": "कोई सार्वजनिक शिकायत नहीं",
+    "marathi": "सार्वजनिक तक्रारी नाहीत"
+  },
+  "be_first_to_share": {
+    "english": "Be the first to share a complaint with the community!",
+    "hindi": "समुदाय के साथ शिकायत साझा करने वाले पहले व्यक्ति बनें!",
+    "marathi": "समुदायासोबत तक्रार शेअर करणारे पहिले व्यक्ती बना!"
+  },
+  "co_sign": {
+    "english": "Co-Sign",
+    "hindi": "सह-हस्ताक्षर",
+    "marathi": "सह-स्वाक्षरी"
+  },
+  "co_signed": {
+    "english": "Co-Signed",
+    "hindi": "सह-हस्ताक्षरित",
+    "marathi": "सह-स्वाक्षरी केले"
+  },
+  "report": {
+    "english": "Report",
+    "hindi": "रिपोर्ट करें",
+    "marathi": "तक्रार नोंदवा"
+  },
+  "reported": {
+    "english": "Reported",
+    "hindi": "रिपोर्ट की गई",
+    "marathi": "तक्रार नोंदवलेली"
+  },
+  "share_on_whatsapp": {
+    "english": "Share on WhatsApp",
+    "hindi": "व्हाट्सएप पर साझा करें",
+    "marathi": "व्हाट्सअ‍ॅपवर शेअर करा"
+  },
+  "load_more": {
+    "english": "Load More",
+    "hindi": "और लोड करें",
+    "marathi": "अजून लोड करा"
+  },
+  "loading_more_complaints": {
+    "english": "Loading more complaints...",
+    "hindi": "अधिक शिकायतें लोड हो रही हैं...",
+    "marathi": "अधिक तक्रारी लोड होत आहेत..."
+  },
+  "better_gondia_mitra": {
+    "english": "Better Gondia Mitra",
+    "hindi": "बेहतर गोंदिया मित्र",
+    "marathi": "बेहतर गोंदिया मित्र"
+  },
+  "making_gondia_better": {
+    "english": "Making Gondia Better",
+    "hindi": "गोंदिया को बेहतर बना रहे हैं",
+    "marathi": "गोंदियाला अधिक चांगले बनवत आहोत"
+  },
+  "chat_ended_start_new": {
+    "english": "This chat has ended, please start a fresh chat to submit another complaint.",
+    "hindi": "यह चैट समाप्त हो गई है, कृपया एक नई चैट शुरू करें ताकि आप एक और शिकायत दर्ज कर सकें।",
+    "marathi": "ही चॅट संपली आहे, कृपया दुसरी तक्रार नोंदवण्यासाठी नवीन चॅट सुरू करा."
+  },
+  "view_my_complaints": {
+    "english": "View My Complaints",
+    "hindi": "मेरी शिकायतें देखें",
+    "marathi": "माझ्या तक्रारी पहा"
+  },
+  "close": {
+    "english": "Close",
+    "hindi": "बंद करें",
+    "marathi": "बंद करा"
+  },
+  "better_gondia": {
+    "english": "Better Gondia",
+    "hindi": "बेहतर गोंदिया",
+    "marathi": "उत्तम गोंदिया"
+  },
+  "follow_us_on": {
+    "english": "Follow us on",
+    "hindi": "हमें यहां फॉलो करें",
+    "marathi": "आम्हाला येथे फॉलो करा"
+  },
+  "status": {
+    "english": "Status",
+    "hindi": "स्टेटस",
+    "marathi": "स्टेटस"
+  },
+  "stay_updated_with_better_gondia": {
+    "english": "Stay updated with Better Gondia",
+    "hindi": "बेहतर गोंदिया के साथ अपडेट रहें",
+    "marathi": "बेटर गोंदियासोबत अपडेट रहा"
+  },
+  "recent_updates": {
+    "english": "Recent Updates",
+    "hindi": "हालिया अपडेट",
+    "marathi": "अलीकडील अद्यतने"
+  },
+  "complaint": {
+    "english": "Complaint",
+    "hindi": "शिकायत",
+    "marathi": "तक्रार"
+  },
+  "suggestion": {
+    "english": "Suggestion",
+    "hindi": "सुझाव",
+    "marathi": "सूचना"
+  }
+}
