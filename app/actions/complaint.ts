@@ -1,5 +1,7 @@
 import prisma from "@/prisma/db";
 import { Complaint } from "@/types";
+import { sendTemplateMessage } from "./whatsapp";
+import { ComplaintPhase, Language } from "@prisma/client";
 
 export const getComplaintById = async (
   complaintId: number | undefined | null
@@ -82,6 +84,30 @@ export const deleteComplaintById = async (
     console.error("Error deleting complaint:", error);
     return { success: false, message: "Failed to delete complaint" };
   }
+};
+
+export const initializeComplaint = async (userId: number, mobileNo: string) => {
+  const complaint = await prisma.complaint.create({
+    data: {
+      userId: userId,
+      phase: ComplaintPhase.INIT,
+      language: Language.ENGLISH,
+    },
+  });
+  await sendTemplateMessage(mobileNo, process.env.LANGUAGE || "");
+  return complaint;
+};
+
+export const deleteIncompleteComplaints = async (userId: number) => {
+  const deletedComplaints = await prisma.complaint.deleteMany({
+    where: {
+      userId: userId,
+      phase: {
+        not: ComplaintPhase.COMPLETED,
+      },
+    },
+  });
+  return deletedComplaints;
 };
 
 // const emailContent = `

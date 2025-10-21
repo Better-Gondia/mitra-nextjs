@@ -16,7 +16,7 @@ export async function generateMetadata({
   const complaint = await getComplaintById(Number(awaitedParams.complaintId));
 
   const baseUrl =
-    process.env.NEXT_PUBLIC_BASE_URL || "https://better-gondia-bot.vercel.app";
+    process.env.NEXT_PUBLIC_BASE_URL || "https://mitra-nextjs.vercel.app";
   const defaultImageUrl =
     "https://d2jow4rnitzfmr.cloudfront.net/e2c40e62-f8c3-44f0-bb48-d6258079243c_logopng.png";
 

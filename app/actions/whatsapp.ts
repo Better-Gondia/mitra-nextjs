@@ -2,6 +2,7 @@
 
 import { Language } from "@prisma/client";
 import axios from "axios";
+import { NextResponse } from "next/server";
 
 export async function sendWhatsAppText(
   phoneNumber: string,
@@ -40,7 +41,12 @@ export async function sendTemplateMessage(
 
 export async function sendLanguageSpecificTemplate(
   mobileNo: string,
-  templateName: "COMP_TYPE" | "TALUKA" | "CONFIRMATION" | "SUGGEST_END",
+  templateName:
+    | "COMP_TYPE"
+    | "TALUKA"
+    | "CONFIRMATION"
+    | "SUGGEST_END"
+    | "INVALID_INPUT",
   language: Language
 ): Promise<void> {
   try {
@@ -53,3 +59,14 @@ export async function sendLanguageSpecificTemplate(
     console.error("Error sending WhatsApp template message:", error);
   }
 }
+
+export const sendInvalidMessageTemplate = async (
+  mobileNo: string,
+  language: Language = "ENGLISH"
+) => {
+  await sendLanguageSpecificTemplate(mobileNo, "INVALID_INPUT", language);
+  return NextResponse.json({
+    success: true,
+    message: "Invalid Input",
+  });
+};

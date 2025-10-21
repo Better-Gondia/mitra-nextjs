@@ -127,9 +127,9 @@ export function getUserLoggedUrlMessage(
   userSlug: string
 ): string {
   const messages = {
-    [PrismaLanguage.ENGLISH]: `Please visit our website to track your complaint status. Thank you for trusting Better Gondia Mitra 🙏 \n \n👉 https://better-gondia-bot.vercel.app?user=${userSlug}`,
-    [PrismaLanguage.HINDI]: `अपनी शिकायत की स्थिति ट्रैक करने के लिए कृपया हमारी वेबसाइट पर जाएं। बेहतर गोंडिया मित्र पर भरोसा करने के लिए धन्यवाद 🙏 \n \n👉 https://better-gondia-bot.vercel.app?user=${userSlug}`,
-    [PrismaLanguage.MARATHI]: `तुमच्या तक्रारीची स्थिती ट्रॅक करण्यासाठी कृपया आमच्या वेबसाइटला भेट द्या. बेहतर गोंडिया मित्रावर विश्वास ठेवल्याबद्दल धन्यवाद 🙏 \n \n👉 https://better-gondia-bot.vercel.app?user=${userSlug}`,
+    [PrismaLanguage.ENGLISH]: `Please visit our website to track your complaint status. Thank you for trusting Better Gondia Mitra 🙏 \n \n👉 https://mitra-nextjs.vercel.app?user=${userSlug}`,
+    [PrismaLanguage.HINDI]: `अपनी शिकायत की स्थिति ट्रैक करने के लिए कृपया हमारी वेबसाइट पर जाएं। बेहतर गोंडिया मित्र पर भरोसा करने के लिए धन्यवाद 🙏 \n \n👉 https://mitra-nextjs.vercel.app?user=${userSlug}`,
+    [PrismaLanguage.MARATHI]: `तुमच्या तक्रारीची स्थिती ट्रॅक करण्यासाठी कृपया आमच्या वेबसाइटला भेट द्या. बेहतर गोंडिया मित्रावर विश्वास ठेवल्याबद्दल धन्यवाद 🙏 \n \n👉 https://mitra-nextjs.vercel.app?user=${userSlug}`,
   };
 
   return messages[language] || messages[PrismaLanguage.ENGLISH];
