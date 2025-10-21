@@ -1,31 +1,60 @@
 "use server";
 
-// Helper function to send WhatsApp confirmation message
-export async function sendWhatsAppConfirmation(
-  mobileNo: string,
+import { Language } from "@prisma/client";
+import axios from "axios";
+
+export async function sendWhatsAppText(
+  phoneNumber: string,
   message: string
-): Promise<void> {
+): Promise<boolean> {
   try {
-    const whatsappResponse = await fetch(process.env.GO_4_WHATSAPP_URL!, {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({
-        customerMobileNo: mobileNo,
-        message: message,
-      }),
+    const response = await axios.post(`${process.env.WHATSAPP_TEXT_URL}`, {
+      customerMobileNo: phoneNumber,
+      type: "text",
+      message: message,
     });
 
-    if (!whatsappResponse.ok) {
-      console.error(
-        "WhatsApp confirmation failed:",
-        await whatsappResponse.text()
-      );
-    } else {
-      console.log("WhatsApp confirmation sent successfully");
-    }
-  } catch (whatsappError) {
-    console.error("Error sending WhatsApp confirmation:", whatsappError);
+    return response.status === 200;
+  } catch (error) {
+    console.error("Error sending WhatsApp message:", error);
+    return false;
+  }
+}
+
+export async function sendTemplateMessage(
+  phoneNumber: string,
+  templateId: string
+): Promise<boolean> {
+  try {
+    const response = await axios.post(`${process.env.WHATSAPP_TEMPLATE_URL}`, {
+      mobileNo: phoneNumber,
+      templateId,
+    });
+    console.log(
+      "🚀 WhatsApp template message sent:",
+      response.data,
+      phoneNumber,
+      templateId
+    );
+    return response.status === 200;
+  } catch (error) {
+    console.error("Error sending WhatsApp message:", error);
+    return false;
+  }
+}
+
+export async function sendLanguageSpecificTemplate(
+  mobileNo: string,
+  templateName: "COMP_TYPE" | "TALUKA" | "CONFIRMATION" | "SUGGEST_END",
+  language: Language
+): Promise<void> {
+  try {
+    const template = `${language}_${templateName}`;
+    await sendTemplateMessage(
+      mobileNo,
+      (process.env[template as keyof typeof process.env] as string) || ""
+    );
+  } catch (error) {
+    console.error("Error sending WhatsApp template message:", error);
   }
 }

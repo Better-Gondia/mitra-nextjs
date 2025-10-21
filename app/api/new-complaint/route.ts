@@ -12,9 +12,14 @@ import prisma from "@/prisma/db";
 import {
   generateComplaintIdFromDate,
   getShortConfirmationMessage,
+  messages,
 } from "@/lib/clientUtils";
 import { downloadAndUploadToS3 } from "@/app/actions/s3";
-import { sendWhatsAppConfirmation } from "@/app/actions/whatsapp";
+import {
+  sendWhatsAppText,
+  sendLanguageSpecificTemplate,
+  sendTemplateMessage,
+} from "@/app/actions/whatsapp";
 import { generateUniqueUserSlug } from "@/app/actions/slug";
 import { deleteComplaintById } from "@/app/actions/complaint";
 import { createMediaObject } from "@/lib/media-utils";
@@ -87,7 +92,7 @@ export async function POST(request: NextRequest) {
         where: { id: user.id },
       });
 
-      await sendWhatsAppConfirmation(
+      await sendWhatsAppText(
         body.mobileNo,
         "Deleted the user for you and all your complaints"
       );
@@ -109,10 +114,7 @@ export async function POST(request: NextRequest) {
         },
       });
 
-      await sendWhatsAppConfirmation(
-        body.mobileNo,
-        "Bot state reset successfully"
-      );
+      await sendWhatsAppText(body.mobileNo, "Bot state reset successfully");
 
       return NextResponse.json({
         success: true,
@@ -169,7 +171,7 @@ export async function POST(request: NextRequest) {
 
         s3Url = await downloadAndUploadToS3(body.msgfile, body.fileType);
         if (s3Url) {
-          await prisma.complaint.update({
+          const attachmentComplaint = await prisma.complaint.update({
             where: { id: complaint.id },
             data: {
               media: {
@@ -182,6 +184,12 @@ export async function POST(request: NextRequest) {
               }),
             },
           });
+          if (attachmentComplaint.phase === ComplaintPhase.ATTACHMENT) {
+            await sendWhatsAppText(
+              body.mobileNo,
+              messages[attachmentComplaint.language].LOCATION
+            );
+          }
         }
 
         return NextResponse.json({
@@ -234,50 +242,52 @@ export async function POST(request: NextRequest) {
     }
 
     // looking for submit/cancel actions to end complaint
-    if (body.message && complaint) {
-      if (
-        ["Submit ✅", "दर्ज करें ✅", "दर्ज करा ✅"].includes(
-          body.message?.trim()
-        ) &&
-        body.msgType === "interactive"
-      ) {
-        await prisma.complaint.update({
-          where: { id: complaint.id },
-          data: {
-            phase: ComplaintPhase.COMPLETED,
-          },
-        });
-        const formattedComplaintId = generateComplaintIdFromDate(
-          complaint.id,
-          complaint.createdAt
-        );
-        const shortMessage = getShortConfirmationMessage(
-          complaint.language,
-          body.customerName,
-          formattedComplaintId
-        );
-        await sendWhatsAppConfirmation(body.mobileNo, shortMessage);
-        return NextResponse.json({
-          success: true,
-          message: "Complaint Prematurely Submitted",
-          complaintId: complaint.id,
-        });
-      } else if (
-        ["Cancel ❌", "रद्द करें ❌", "रद्द करा ❌"].includes(
-          body.message?.trim()
-        ) &&
-        body.msgType === "interactive"
-      ) {
-        await deleteComplaintById(complaint.id);
-        return NextResponse.json({
-          success: true,
-          message: "Deleted Current Complaint",
-          complaintId: complaint.id,
-        });
-      }
-    }
+    // if (body.message && complaint) {
+    //   if (
+    //     ["Submit ✅", "दर्ज करें ✅", "दर्ज करा ✅"].includes(
+    //       body.message?.trim()
+    //     ) &&
+    //     body.msgType === "interactive"
+    //   ) {
+    //     await prisma.complaint.update({
+    //       where: { id: complaint.id },
+    //       data: {
+    //         phase: ComplaintPhase.COMPLETED,
+    //       },
+    //     });
+    //     const formattedComplaintId = generateComplaintIdFromDate(
+    //       complaint.id,
+    //       complaint.createdAt
+    //     );
+    //     const shortMessage = getShortConfirmationMessage(
+    //       complaint.language,
+    //       body.customerName,
+    //       formattedComplaintId
+    //     );
+    //     await sendWhatsAppText(body.mobileNo, shortMessage);
+    //     NextResponse.json({
+    //       success: true,
+    //       message: "Complaint Prematurely Submitted",
+    //       complaintId: complaint.id,
+    //     });
+    //     return;
+    //   } else if (
+    //     ["Cancel ❌", "रद्द करें ❌", "रद्द करा ❌"].includes(
+    //       body.message?.trim()
+    //     ) &&
+    //     body.msgType === "interactive"
+    //   ) {
+    //     await deleteComplaintById(complaint.id);
+    //     NextResponse.json({
+    //       success: true,
+    //       message: "Deleted Current Complaint",
+    //       complaintId: complaint.id,
+    //     });
+    //     return;
+    //   }
+    // }
 
-    // Determine the current phase and update accordingly
+    // New complaint initiated
     if (!complaint) {
       // Create new complaint in INIT phase
       complaint = await prisma.complaint.create({
@@ -287,6 +297,7 @@ export async function POST(request: NextRequest) {
           language: Language.ENGLISH,
         },
       });
+      await sendTemplateMessage(body.mobileNo, process.env.LANGUAGE || "");
 
       return NextResponse.json({
         success: true,
@@ -322,6 +333,11 @@ export async function POST(request: NextRequest) {
               },
             });
           }
+          await sendLanguageSpecificTemplate(
+            body.mobileNo,
+            "COMP_TYPE",
+            updatedComplaint.language
+          );
           return NextResponse.json({
             success: true,
             message: "Stored Language Successfully",
@@ -346,6 +362,11 @@ export async function POST(request: NextRequest) {
                 phase: ComplaintPhase.COMPLAINT_TYPE,
               },
             });
+            await sendLanguageSpecificTemplate(
+              body.mobileNo,
+              "TALUKA",
+              updatedComplaint.language
+            );
             return NextResponse.json({
               success: true,
               message: "Stored COMPLAINT_TYPE Successfully",
@@ -365,6 +386,10 @@ export async function POST(request: NextRequest) {
                 phase: ComplaintPhase.COMPLAINT_TYPE,
               },
             });
+            await sendWhatsAppText(
+              body.mobileNo,
+              messages[updatedComplaint.language].SUGGESTION_DESCRIPTION
+            );
             return NextResponse.json({
               success: true,
               message: "Stored COMPLAINT_TYPE Successfully",
@@ -377,14 +402,11 @@ export async function POST(request: NextRequest) {
             ) &&
             body.msgType === "interactive"
           ) {
-            // const userLoggedUrlMessage =
-            //   "Please visit our website to track your complaint status. Thank you for trusting Better Gondia Mitra 🙏 \n \n👉 https://better-gondia-bot.vercel.app?user=" +
-            //   user.slug;
             const userLoggedUrlMessage = getUserLoggedUrlMessage(
               complaint.language,
               user.slug
             );
-            await sendWhatsAppConfirmation(body.mobileNo, userLoggedUrlMessage);
+            await sendWhatsAppText(body.mobileNo, userLoggedUrlMessage);
             await deleteComplaintById(complaint.id);
             return NextResponse.json({
               success: true,
@@ -406,6 +428,10 @@ export async function POST(request: NextRequest) {
                 phase: ComplaintPhase.TALUKA,
               },
             });
+            await sendWhatsAppText(
+              body.mobileNo,
+              messages[updatedComplaint.language].COMPLAINT_DESCRIPTION
+            );
             return NextResponse.json({
               success: true,
               message: "Stored TALUKA Successfully",
@@ -420,6 +446,13 @@ export async function POST(request: NextRequest) {
                 phase: ComplaintPhase.COMPLETED,
               },
             });
+
+            await sendLanguageSpecificTemplate(
+              body.mobileNo,
+              "SUGGEST_END",
+              updatedComplaint.language
+            );
+
             return NextResponse.json({
               success: true,
               message: "Stored Suggestion Successfully",
@@ -437,6 +470,10 @@ export async function POST(request: NextRequest) {
               phase: ComplaintPhase.DESCRIPTION,
             },
           });
+          await sendWhatsAppText(
+            body.mobileNo,
+            messages[updatedComplaint.language].MEDIA_UPLOAD
+          );
           return NextResponse.json({
             success: true,
             message: "Stored DESCRIPTION Successfully",
@@ -451,6 +488,10 @@ export async function POST(request: NextRequest) {
               phase: ComplaintPhase.ATTACHMENT,
             },
           });
+          await sendWhatsAppText(
+            body.mobileNo,
+            messages[updatedComplaint.language].LOCATION
+          );
 
           return NextResponse.json({
             success: true,
@@ -467,6 +508,11 @@ export async function POST(request: NextRequest) {
               phase: ComplaintPhase.LOCATION,
             },
           });
+          await sendLanguageSpecificTemplate(
+            body.mobileNo,
+            "CONFIRMATION",
+            updatedComplaint.language
+          );
           return NextResponse.json({
             success: true,
             message: "Stored LOCATION",
@@ -495,6 +541,10 @@ export async function POST(request: NextRequest) {
             body.msgType === "interactive"
           ) {
             await deleteComplaintById(complaint.id);
+            await sendWhatsAppText(
+              body.mobileNo,
+              messages[updatedComplaint.language].CANCEL
+            );
             return NextResponse.json({
               success: true,
               message: "Deleted Current Complaint",
@@ -511,35 +561,6 @@ export async function POST(request: NextRequest) {
         updatedComplaint.createdAt
       );
 
-      // Send WhatsApp confirmation message for completed complaint
-      //       const whatsappConfirmationMessage = `✅ *Complaint Successfully Submitted!*
-
-      // Dear ${body.customerName},
-      // Your ${updatedComplaint.type === "SUGGESTION" ? "suggestion" : "complaint"} has been successfully submitted to the Better Gondia Mitra.
-
-      // 📋 *Complaint Details:*
-      // • Complaint ID: *${formattedComplaintId}*
-      // • Type: ${updatedComplaint.type === "SUGGESTION" ? "💡 Suggestion" : "⚠️ Complaint"}
-      // • Taluka: ${updatedComplaint.taluka || "Not specified"}
-      // • Status: 🟢 Open (Under Review)
-      // 📝 *Description:*
-      // ${updatedComplaint.description || "No description provided"}
-      // 📍 *Location:* ${updatedComplaint.location || "Not specified"}
-      // ⏰ *Submission Time:* ${new Date().toLocaleString("en-IN", {
-      //         timeZone: "Asia/Kolkata",
-      //         year: "numeric",
-      //         month: "long",
-      //         day: "numeric",
-      //         hour: "2-digit",
-      //         minute: "2-digit",
-      //       })}
-      // 📞 *Your Contact:* ${body.mobileNo}
-
-      // 💡 *Keep this Complaint ID safe for future reference!*
-      // Thank you for taking the time to help improve Gondia! Your feedback is valuable to us. 🙏
-
-      // *Better Gondia Mitra*`;
-
       const whatsappConfirmationMessage = await getWhatsappConfirmationMessage(
         complaint.language,
         body.customerName,
@@ -551,10 +572,7 @@ export async function POST(request: NextRequest) {
         body.mobileNo
       );
 
-      await sendWhatsAppConfirmation(
-        body.mobileNo,
-        whatsappConfirmationMessage
-      );
+      await sendWhatsAppText(body.mobileNo, whatsappConfirmationMessage);
     }
 
     return NextResponse.json({
@@ -609,8 +627,4 @@ ${errorStack}
       { status: 500 }
     );
   }
-  // finally {
-  //   // Close Prisma connection
-  //   await prisma.$disconnect();
-  // }
 }
