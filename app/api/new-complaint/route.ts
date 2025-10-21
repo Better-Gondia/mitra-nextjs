@@ -155,7 +155,7 @@ export async function POST(request: NextRequest) {
     let phase = null;
 
     // Handle media upload for the most recent completed complaint
-    if (body.fileType && body.msgfile && body.msgType === "image") {
+    if (body.fileType && body.msgfile) {
       // Find the most recent completed complaint for this user
       complaint = await prisma.complaint.findFirst({
         where: {
@@ -184,7 +184,7 @@ export async function POST(request: NextRequest) {
               }),
             },
           });
-          if (attachmentComplaint.phase === ComplaintPhase.ATTACHMENT) {
+          if (complaint.phase === ComplaintPhase.DESCRIPTION) {
             await sendWhatsAppText(
               body.mobileNo,
               messages[attachmentComplaint.language].LOCATION
