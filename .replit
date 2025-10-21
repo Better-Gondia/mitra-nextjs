@@ -4,3 +4,8 @@ expertMode = true
 
 [nix]
 channel = "stable-25_05"
+
+[deployment]
+deploymentTarget = "autoscale"
+run = ["pnpm", "run"]
+build = ["pnpm", "run", "build"]
