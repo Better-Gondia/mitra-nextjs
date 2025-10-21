@@ -22,8 +22,6 @@ export const AppWrapper = ({ children }: { children: React.ReactNode }) => {
           <Toaster richColors position="top-center" expand closeButton />
           <TooltipProvider>
             <div className="flex min-h-[100dvh] m-0 p-0 w-full md:justify-center md:items-center bg-black">
-              {/* Left-side text (only on md and up) */}
-              {/* Centered "mobile screen" */}
               <div className="w-full md:w-[400px] m-auto my-0 p-0 h-full md:h-[100dvh]">
                 <GenericModal />
                 {children}
