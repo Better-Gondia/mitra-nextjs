@@ -30,12 +30,6 @@ export async function sendTemplateMessage(
       mobileNo: phoneNumber,
       templateId,
     });
-    console.log(
-      "🚀 WhatsApp template message sent:",
-      response.data,
-      phoneNumber,
-      templateId
-    );
     return response.status === 200;
   } catch (error) {
     console.error("Error sending WhatsApp message:", error);
