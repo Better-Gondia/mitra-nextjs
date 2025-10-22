@@ -62,19 +62,45 @@ export function MobileLookupModal({
   return (
     <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
       <div className="bg-white rounded-xl max-w-md w-full p-6 shadow-2xl">
-        <div className="text-center mb-6">
-          <div className="w-16 h-16 bg-gradient-to-br from-[#075E54] to-[#008F6F] rounded-full flex items-center justify-center mx-auto mb-4">
+        <div className="text-center ">
+          {/* <div className="w-16 h-16 bg-gradient-to-br from-[#075E54] to-[#008F6F] rounded-full flex items-center justify-center mx-auto mb-4">
             <span className="text-white text-2xl">📱</span>
           </div>
           <h2 className="text-xl font-semibold text-gray-900 mb-2">
             Enter Your Mobile Number
-          </h2>
-          <p className="text-gray-600 text-sm">
+          </h2> */}
+          {/* <p className="text-gray-600 text-sm">
             We'll help you find your account and view your complaints
-          </p>
-        </div>
+          </p> */}
 
-        <form onSubmit={handleSubmit} className="space-y-4">
+          {/* WhatsApp message */}
+          <div className=" p-4 bg-green-50 border border-green-200 rounded-lg">
+            <p className="text-green-800 text-sm font-medium mb-2">
+              💬 Quick Access to Your Complaints
+            </p>
+            <p className="text-green-700 text-xs mb-3">
+              Please ask the bot for access to this site by saying "Hi Mitra!
+              Tell me the status of my complaint."
+            </p>
+            <button
+              type="button"
+              onClick={() => {
+                const message = encodeURIComponent(
+                  "Hi Mitra! Tell me the status of my complaint."
+                );
+                const whatsappUrl = `https://wa.me/917875441601?text=${message}`;
+                window.open(whatsappUrl, "_blank");
+              }}
+              className="w-full bg-green-600 hover:bg-green-700 text-white py-2 px-4 rounded-lg text-sm font-medium transition-colors duration-200 flex items-center justify-center gap-2"
+            >
+              <span>📱</span>
+              View Your Complaints
+            </button>
+          </div>
+        </div>
+      </div>
+
+      {/* <form onSubmit={handleSubmit} className="space-y-4">
           <div>
             <Label className="block text-sm font-medium mb-2">
               Mobile Number
@@ -134,7 +160,7 @@ export function MobileLookupModal({
             </p>
           </div>
         )}
-      </div>
+      </div> */}
     </div>
   );
 }

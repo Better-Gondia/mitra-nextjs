@@ -127,9 +127,9 @@ export function getUserLoggedUrlMessage(
   userSlug: string
 ): string {
   const messages = {
-    [PrismaLanguage.ENGLISH]: `Please visit our website to track your complaint status. Thank you for trusting Better Gondia Mitra 🙏 \n \n👉 https://mitra-nextjs.vercel.app?user=${userSlug}`,
-    [PrismaLanguage.HINDI]: `अपनी शिकायत की स्थिति ट्रैक करने के लिए कृपया हमारी वेबसाइट पर जाएं। बेहतर गोंडिया मित्र पर भरोसा करने के लिए धन्यवाद 🙏 \n \n👉 https://mitra-nextjs.vercel.app?user=${userSlug}`,
-    [PrismaLanguage.MARATHI]: `तुमच्या तक्रारीची स्थिती ट्रॅक करण्यासाठी कृपया आमच्या वेबसाइटला भेट द्या. बेहतर गोंडिया मित्रावर विश्वास ठेवल्याबद्दल धन्यवाद 🙏 \n \n👉 https://mitra-nextjs.vercel.app?user=${userSlug}`,
+    [PrismaLanguage.ENGLISH]: `Please visit our website to track your complaint status. Thank you for trusting Better Gondia Mitra 🙏 \n \n👉 https://mitra.bettergondia.org?user=${userSlug}`,
+    [PrismaLanguage.HINDI]: `अपनी शिकायत की स्थिति ट्रैक करने के लिए कृपया हमारी वेबसाइट पर जाएं। बेहतर गोंडिया मित्र पर भरोसा करने के लिए धन्यवाद 🙏 \n \n👉 https://mitra.bettergondia.org?user=${userSlug}`,
+    [PrismaLanguage.MARATHI]: `तुमच्या तक्रारीची स्थिती ट्रॅक करण्यासाठी कृपया आमच्या वेबसाइटला भेट द्या. बेहतर गोंडिया मित्रावर विश्वास ठेवल्याबद्दल धन्यवाद 🙏 \n \n👉 https://mitra.bettergondia.org?user=${userSlug}`,
   };
 
   return messages[language] || messages[PrismaLanguage.ENGLISH];
@@ -312,7 +312,7 @@ Thank you for contacting Better Gondia Mitra! 🙏`,
 export const messages = {
   ENGLISH: {
     COMPLAINT_DESCRIPTION:
-      "*COMPLAINT DETAILS* ✍🏻 \n\nYour input makes an impact! 💡\n\nPlease type details of your complaint below in *simple, clear words*\n\n*One complaint* per message helps us act faster ✅",
+      "*COMPLAINT DETAILS* ✍🏻 \n\nYour input makes an impact! 💡\n\nPlease type details of your complaint below in *simple, clear words.*\n\n*One complaint* per message helps us act faster ✅",
     MEDIA_UPLOAD:
       "*PHOTO-VIDEO* 📸\n\nGot visuals of the problem?\n\nSend *photos or a short video* of the problem for faster action or simply type 'skip'.",
     LOCATION:
@@ -352,4 +352,15 @@ export const messages = {
     SUGGESTION_CONFIRMATION:
       "*धन्यवाद!* 🎉\n\nतुमची सूचना यशस्वीरित्या प्राप्त झाली! 🎯\n\nआम्ही तिची तपासणी करू आणि गरज असल्यास तुमच्याशी संपर्क करू. 🙏🏻\n\nपुन्हा भेटूया! 😊",
   },
+};
+
+export const isValidMessage = (message: string | null): boolean => {
+  if (!message) return false;
+  if (
+    message.trim().length <= 5 &&
+    message.trim().toLowerCase().includes("null")
+  ) {
+    return false;
+  }
+  return true;
 };

@@ -31,6 +31,7 @@ import { createMediaObject } from "@/lib/media-utils";
 import {
   getUserLoggedUrlMessage,
   getWhatsappConfirmationMessage,
+  isValidMessage,
 } from "@/lib/clientUtils";
 
 type languages = "English" | "हिंदी" | "मराठी";
@@ -156,6 +157,20 @@ export async function POST(request: NextRequest) {
       });
     }
 
+    // Get status command
+    if (body.message === "Hi Mitra! Tell me the status of my complaint.") {
+      const userLoggedUrlMessage = getUserLoggedUrlMessage(
+        Language.ENGLISH,
+        user.slug
+      );
+      await sendWhatsAppText(body.mobileNo, userLoggedUrlMessage);
+
+      return NextResponse.json({
+        success: true,
+        message: "Reverted with Status URL",
+      });
+    }
+
     let complaint = null;
     let phase = null;
 
@@ -197,18 +212,20 @@ export async function POST(request: NextRequest) {
           }
         }
 
-        return NextResponse.json({
-          success: true,
-          message: `ATTACHMENT uploaded to ${complaint.phase} complaint`,
-          complaintId: complaint.id,
-          mediaAdded: true,
-        });
+        if (!isValidMessage(body.message)) {
+          return NextResponse.json({
+            success: true,
+            message: `ATTACHMENT uploaded to ${complaint.phase} complaint`,
+            complaintId: complaint.id,
+            mediaAdded: true,
+          });
+        }
       }
     }
 
     // Find existing complaint with the least phase (most incomplete) for this user
     // We need to fetch all incomplete complaints and sort them by phase priority
-    if (!complaint) {
+    if (!complaint || complaint.phase === ComplaintPhase.COMPLETED) {
       const incompleteComplaints = await prisma.complaint.findMany({
         where: {
           userId: user.id,
@@ -500,7 +517,12 @@ export async function POST(request: NextRequest) {
 
         case "TALUKA":
           // This should be the description
-          if (body.msgType == "text") {
+          if (
+            (body.msgType == "text" ||
+              body.msgType == "image" ||
+              body.msgType == "video") &&
+            isValidMessage(body.message)
+          ) {
             updatedComplaint = await prisma.complaint.update({
               where: { id: complaint.id },
               data: {
@@ -525,6 +547,7 @@ export async function POST(request: NextRequest) {
             );
           }
 
+        // Skipping attachment
         case "DESCRIPTION":
           await prisma.complaint.update({
             where: { id: complaint.id },
@@ -544,8 +567,14 @@ export async function POST(request: NextRequest) {
             phase: "ATTACHMENT",
           });
 
+        // Storing Location
         case "ATTACHMENT":
-          if (body.msgType == "text") {
+          if (
+            (body.msgType == "text" ||
+              body.msgType == "image" ||
+              body.msgType == "video") &&
+            isValidMessage(body.message)
+          ) {
             updatedComplaint = await prisma.complaint.update({
               where: { id: complaint.id },
               data: {

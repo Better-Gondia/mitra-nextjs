@@ -7,7 +7,7 @@ export function generateMetadata(): Metadata {
     "https://d2jow4rnitzfmr.cloudfront.net/e2c40e62-f8c3-44f0-bb48-d6258079243c_logopng.png";
 
   const baseUrl =
-    process.env.NEXT_PUBLIC_BASE_URL || "https://mitra-nextjs.vercel.app";
+    process.env.NEXT_PUBLIC_BASE_URL || "https://mitra.bettergondia.org";
 
   return {
     title: "Better Gondia Mitra - Report Issues & Track Complaints",
