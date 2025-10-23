@@ -218,6 +218,7 @@ export async function GET(req: NextRequest) {
       latitude: complaint.latitude,
       longitude: complaint.longitude,
       status: complaint.status,
+      taluka: complaint.taluka,
 
       media: complaint.media,
 

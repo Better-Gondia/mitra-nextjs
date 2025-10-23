@@ -478,5 +478,15 @@
     "english": "Taluka",
     "hindi": "तालुका",
     "marathi": "तालुका"
+  },
+  "active_filters": {
+    "english": "Active Filters:",
+    "hindi": "सक्रिय फिल्टर:",
+    "marathi": "सक्रिय फिल्टर:"
+  },
+  "clear_all": {
+    "english": "Clear All",
+    "hindi": "सभी साफ करें",
+    "marathi": "सर्व साफ करा"
   }
 }

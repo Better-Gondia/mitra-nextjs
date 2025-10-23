@@ -43,6 +43,7 @@ export async function GET(
       latitude: complaint.latitude,
       longitude: complaint.longitude,
       status: complaint.status,
+      taluka: complaint.taluka,
       media: complaint.media,
       isMediaApproved: complaint.isMediaApproved,
       isPublic: complaint.isPublic,

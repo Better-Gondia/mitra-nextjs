@@ -18,7 +18,12 @@ export const AppWrapper = ({ children }: { children: React.ReactNode }) => {
   return (
     <SessionProvider>
       <QueryClientProvider client={queryClient}>
-        <ThemeProvider>
+        <ThemeProvider
+          attribute="class"
+          defaultTheme="light"
+          enableSystem={false}
+          disableTransitionOnChange
+        >
           <NextTopLoader color="#155dfc" showSpinner={false} />
           <Toaster richColors position="top-center" expand closeButton />
           <TooltipProvider>
