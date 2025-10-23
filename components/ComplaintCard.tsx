@@ -116,7 +116,7 @@ export const ComplaintCard = ({ complaint }: ComplaintCardProps) => {
                 </p>
               </div>
             </div>
-            <div className="text-right">
+            {/* <div className="text-right">
               <div className="flex flex-col gap-1">
                 <Badge
                   variant="secondary"
@@ -133,7 +133,7 @@ export const ComplaintCard = ({ complaint }: ComplaintCardProps) => {
                   </Badge>
                 )}
               </div>
-            </div>
+            </div> */}
           </div>
         </div>
 

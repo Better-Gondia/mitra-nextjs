@@ -141,6 +141,18 @@ export const CommunityComplaintCard = ({
           <p className="text-sm  mb-3">📍 {complaint.location}</p>
         )}
 
+        {/* Taluka */}
+        {complaint.taluka && (
+          <div className="mb-3">
+            <Badge
+              variant="outline"
+              className="text-xs bg-teal-50 text-teal-700 border-teal-200"
+            >
+              🏘️ {translate("taluka", language)}: {complaint.taluka}
+            </Badge>
+          </div>
+        )}
+
         {/* Resolved Update */}
         {/* {complaint.isResolved && (
         <div className="bg-green-50 border border-green-200 rounded-lg p-3 mb-3">
@@ -155,13 +167,13 @@ export const CommunityComplaintCard = ({
       )} */}
 
         {/* Action Buttons */}
-        <div className="flex flex-col  items-center justify-between">
-          <div className="flex items-center justify-between w-full">
+        <div className="flex flex-col items-center justify-between mt-3">
+          <div className="flex items-center w-full gap-[10px]">
             {isAuthenticated ? (
               <Button
                 variant={complaint.isCoSigned ? "outline" : "default"}
                 size="sm"
-                className={`flex items-center space-x-1 ${
+                className={`flex items-center space-x-1 w-1/2 ${
                   complaint.isCoSigned
                     ? "border-green-600 text-green-600 bg-green-50 hover:bg-green-100"
                     : "bg-green-600 text-white hover:bg-green-700 shadow-sm"
@@ -190,7 +202,7 @@ export const CommunityComplaintCard = ({
                 </span>
               </Button>
             ) : (
-              <div className="flex items-center space-x-1 text-gray-500 bg-gray-50 px-3 py-1.5 rounded-md">
+              <div className="flex items-center space-x-1 text-gray-500 bg-gray-50 px-3 py-1.5 rounded-md w-[calc(50%-5px)]">
                 <ThumbsUp className="w-4 h-4" />
                 <span className="text-sm font-medium">
                   {translate("co_sign", language)} ({complaint.coSignCount})
@@ -198,7 +210,7 @@ export const CommunityComplaintCard = ({
               </div>
             )}
 
-            {isAuthenticated ? (
+            {/* {isAuthenticated ? (
               complaint.isReported ? (
                 <span className="text-sm text-gray-500 ml-2">
                   {translate("reported", language)} ☑️
@@ -219,8 +231,8 @@ export const CommunityComplaintCard = ({
                   </span>
                 </Button>
               )
-            ) : null}
-            <Badge className={getCategoryColor(complaint.category || "")}>
+            ) : null} */}
+            {/* <Badge className={getCategoryColor(complaint.category || "")}>
               {getCategoryIcon(complaint.category || "")}{" "}
               {complaint.category &&
               ["roads", "water", "electricity", "sanitation"].includes(
@@ -228,31 +240,34 @@ export const CommunityComplaintCard = ({
               )
                 ? translate(complaint.category as any, language)
                 : complaint.category || "General"}
-            </Badge>
+            </Badge> */}
+            {!isShared && (
+              <Button
+                variant="outline"
+                size="sm"
+                className="bg-green-50 border-green-400 text-green-700 hover:bg-green-100 w-[calc(50%-5px)]"
+                onClick={() =>
+                  window.open(
+                    `https://api.whatsapp.com/send?text=${encodeURIComponent(
+                      `Check out the complaint ${generateComplaintIdFromDate(
+                        complaint.id,
+                        complaint.createdAt
+                      )} in Better Gondia Mitra. \n` +
+                        process.env.NEXT_PUBLIC_BASE_URL +
+                        "/" +
+                        complaint.id
+                    )}`,
+                    "_blank"
+                  )
+                }
+              >
+                <Share2 className="w-4 h-4 mr-1" />
+                <span className="text-sm font-medium">
+                  {translate("share_on_whatsapp", language)}
+                </span>
+              </Button>
+            )}
           </div>
-          {!isShared && (
-            <Button
-              variant="outline"
-              size="sm"
-              className="w-full mt-3 bg-green-50 border-green-400 text-green-700 hover:bg-green-100"
-              onClick={() =>
-                window.open(
-                  `https://api.whatsapp.com/send?text=${encodeURIComponent(
-                    `Check out the complaint ${generateComplaintIdFromDate(
-                      complaint.id,
-                      complaint.createdAt
-                    )} in Better Gondia Mitra. \n` +
-                      process.env.NEXT_PUBLIC_BASE_URL +
-                      "/" +
-                      complaint.id
-                  )}`,
-                  "_blank"
-                )
-              }
-            >
-              {translate("share_on_whatsapp", language)} <Share2 />
-            </Button>
-          )}
         </div>
       </div>
 

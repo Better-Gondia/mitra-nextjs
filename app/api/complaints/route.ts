@@ -28,6 +28,8 @@ export async function GET(req: NextRequest) {
     const compId = searchParams.get("compId");
     const page = parseInt(searchParams.get("page") || "1");
     const limit = parseInt(searchParams.get("limit") || "10");
+    const taluka = searchParams.get("taluka");
+    const search = searchParams.get("search");
     const offset = (page - 1) * limit;
 
     console.log("userSlug and searchParam ===== ", userSlug, searchParams);
@@ -67,6 +69,14 @@ export async function GET(req: NextRequest) {
           ...(fetchOption == "my" && userIdNumber && { userId: userIdNumber }),
           ...((!user || user.role == "USER") &&
             fetchOption == "all" && { isPublic: true }),
+          ...(taluka && { taluka: taluka }),
+          ...(search && {
+            OR: [
+              { title: { contains: search, mode: "insensitive" } },
+              { description: { contains: search, mode: "insensitive" } },
+              { location: { contains: search, mode: "insensitive" } },
+            ],
+          }),
         },
         include: {
           user: {
@@ -82,6 +92,14 @@ export async function GET(req: NextRequest) {
           ...((!user || user.role == "USER") &&
             fetchOption == "all" && { isPublic: true }),
           id: { not: compIdNum },
+          ...(taluka && { taluka: taluka }),
+          ...(search && {
+            OR: [
+              { title: { contains: search, mode: "insensitive" } },
+              { description: { contains: search, mode: "insensitive" } },
+              { location: { contains: search, mode: "insensitive" } },
+            ],
+          }),
         },
       });
 
@@ -92,6 +110,14 @@ export async function GET(req: NextRequest) {
           ...((!user || user.role == "USER") &&
             fetchOption == "all" && { isPublic: true }),
           id: { not: compIdNum },
+          ...(taluka && { taluka: taluka }),
+          ...(search && {
+            OR: [
+              { title: { contains: search, mode: "insensitive" } },
+              { description: { contains: search, mode: "insensitive" } },
+              { location: { contains: search, mode: "insensitive" } },
+            ],
+          }),
         },
         include: {
           user: {
@@ -115,6 +141,14 @@ export async function GET(req: NextRequest) {
           ...(fetchOption == "my" && userIdNumber && { userId: userIdNumber }),
           ...((!user || user.role == "USER") &&
             fetchOption == "all" && { isPublic: true }),
+          ...(taluka && { taluka: taluka }),
+          ...(search && {
+            OR: [
+              { title: { contains: search, mode: "insensitive" } },
+              { description: { contains: search, mode: "insensitive" } },
+              { location: { contains: search, mode: "insensitive" } },
+            ],
+          }),
         },
       });
 
@@ -123,6 +157,14 @@ export async function GET(req: NextRequest) {
           ...(fetchOption == "my" && userIdNumber && { userId: userIdNumber }),
           ...((!user || user.role == "USER") &&
             fetchOption == "all" && { isPublic: true }),
+          ...(taluka && { taluka: taluka }),
+          ...(search && {
+            OR: [
+              { title: { contains: search, mode: "insensitive" } },
+              { description: { contains: search, mode: "insensitive" } },
+              { location: { contains: search, mode: "insensitive" } },
+            ],
+          }),
         },
         include: {
           user: {

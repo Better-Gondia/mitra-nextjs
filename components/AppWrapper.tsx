@@ -10,6 +10,7 @@ import { useLoaderStore } from "@/store/loader";
 import { Spinner } from "./ui/spinner";
 import { GenericModal } from "./modal/GenericModal";
 import NextTopLoader from "nextjs-toploader";
+import { ReactQueryDevtools } from "@tanstack/react-query-devtools";
 
 export const AppWrapper = ({ children }: { children: React.ReactNode }) => {
   const isLoading = useLoaderStore((state) => state.isLoading);
@@ -38,6 +39,7 @@ export const AppWrapper = ({ children }: { children: React.ReactNode }) => {
               </div> */}
             </div>
           </TooltipProvider>
+          <ReactQueryDevtools initialIsOpen={false} />
         </ThemeProvider>
       </QueryClientProvider>
     </SessionProvider>

@@ -16,7 +16,7 @@ import {
   Section,
   ChatMessage,
 } from "@/types";
-import { Users } from "lucide-react";
+import { Users, Search, Filter, X, LoaderCircle } from "lucide-react";
 import { CommunityComplaintCard } from "./CommunityComplaintCard";
 import { useSession } from "next-auth/react";
 import { appSession } from "@/lib/auth";
@@ -27,6 +27,9 @@ import { useModal } from "@/store/modal";
 import { generateComplaintIdFromDate } from "@/lib/clientUtils";
 import { useCompId } from "@/store/compId";
 import { Button } from "./ui/button";
+import { Input } from "./ui/input";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "./ui/select";
+import { Badge } from "./ui/badge";
 import { translate } from "@/lib/translator";
 import { useLanguage } from "@/store/language";
 import { useMessages } from "@/store/messages";
@@ -48,6 +51,19 @@ interface PaginatedComplaintsResponse {
     totalPages: number;
   };
 }
+
+// Common talukas in Gondia district
+const TALUKA_OPTIONS = [
+  "Gondia",
+  "Goregaon",
+  "Tirora",
+  "Amgaon",
+  "Arjuni Morgaon",
+  "Deori",
+  "Salekasa",
+  "Sadak Arjuni",
+  "All Talukas"
+];
 
 export default function CommunitySection({
   user,
@@ -77,16 +93,31 @@ export default function CommunitySection({
   const [allComplaints, setAllComplaints] = useState<Complaint[]>([]);
   const [hasMore, setHasMore] = useState(true);
   const [isLoadingMore, setIsLoadingMore] = useState(false);
+  
+  // Filter and search states
+  const [selectedTaluka, setSelectedTaluka] = useState<string>("All Talukas");
+  const [searchInput, setSearchInput] = useState<string>("");
+  const [searchQuery, setSearchQuery] = useState<string>("");
+  const [isSearching, setIsSearching] = useState(false);
+  const [showFilters, setShowFilters] = useState(false);
 
   const { data: complaintsData, isLoading } =
     useQuery<PaginatedComplaintsResponse>({
-      queryKey: ["/api/complaints", user],
+      queryKey: ["/api/complaints", user, selectedTaluka, searchQuery, currentPage],
       queryFn: async () => {
+        const params = new URLSearchParams({
+          userSlug: user || "",
+          fetch: "all",
+          page: currentPage.toString(),
+          limit: "10",
+          ...(compId && { compId: compId.toString() }),
+          ...(selectedTaluka !== "All Talukas" && { taluka: selectedTaluka }),
+          ...(searchQuery && { search: searchQuery }),
+        });
+        
         const response = await apiRequest(
           "GET",
-          `/api/complaints?userSlug=${user}&&fetch=all${
-            compId ? `&&compId=${compId}` : ""
-          }&&page=${currentPage}&&limit=10`
+          `/api/complaints?${params.toString()}`
         );
         return response.json();
       },
@@ -106,6 +137,26 @@ export default function CommunitySection({
       // }
     }
   }, [complaintsData]);
+
+  // Reset to first page when filters change
+  useEffect(() => {
+    setCurrentPage(1);
+  }, [selectedTaluka, searchQuery]);
+
+  // Search handler
+  const handleSearch = () => {
+    setIsSearching(true);
+    setSearchQuery(searchInput); // Only update the actual search query when button is clicked
+    setCurrentPage(1);
+    // The query will automatically refetch due to dependency change
+    setTimeout(() => setIsSearching(false), 1000);
+  };
+
+  // Filter handler
+  const handleTalukaFilter = (taluka: string) => {
+    setSelectedTaluka(taluka);
+    setCurrentPage(1);
+  };
 
   const toggleVisibility = useMutation({
     mutationFn: async ({
@@ -386,7 +437,7 @@ export default function CommunitySection({
   //   return `${names[0].charAt(0)}${names[1].charAt(0)}`.toUpperCase();
   // };
 
-  if (isLoading && currentPage === 1) {
+  if (isLoading && currentPage === 1 && selectedTaluka === "All Talukas" && searchQuery === "") {
     return <Spinner blur />;
   }
 
@@ -396,18 +447,120 @@ export default function CommunitySection({
     <div className="h-full flex flex-col">
       {/* Community Header */}
       <div className="bg-white px-4 py-2.5 border-b border-gray-200">
-        <h2 className="font-semibold ">
-          {translate("gondia_public_wall", language)}
-        </h2>
-        <p className="text-sm ">
-          {translate("see_what_others_are_reporting", language)}
-        </p>
+        <div className="flex items-center justify-between">
+          <div>
+            <h2 className="font-semibold ">
+              {translate("gondia_public_wall", language)}
+            </h2>
+            <p className="text-sm ">
+              {translate("see_what_others_are_reporting", language)}
+            </p>
+          </div>
+          <Button
+            variant="outline"
+            size="sm"
+            onClick={() => setShowFilters(!showFilters)}
+            className="flex items-center gap-2"
+          >
+            <Filter className="w-4 h-4" />
+            {showFilters ? translate("hide_filters", language) : translate("show_filters", language)}
+          </Button>
+        </div>
       </div>
+
+      {/* Filters and Search */}
+      {showFilters && (
+        <div className="bg-white px-4 py-3 border-b border-gray-200 space-y-3">
+          <div className="flex flex-col gap-3">
+            {/* Taluka Filter */}
+            <div className="flex-1">
+              <label className="block text-sm font-medium text-gray-700 mb-1">
+                {translate("filter_by_taluka", language)}
+              </label>
+              <Select value={selectedTaluka} onValueChange={handleTalukaFilter}>
+                <SelectTrigger className="w-full">
+                  <SelectValue placeholder={translate("select_taluka", language)} />
+                </SelectTrigger>
+                <SelectContent className="bg-white">
+                  {TALUKA_OPTIONS.map((taluka) => (
+                    <SelectItem key={taluka} value={taluka}>
+                      {taluka === "All Talukas" ? translate("all_talukas", language) : taluka}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </div>
+
+            {/* Search */}
+            <div className="flex-1">
+              <label className="block text-sm font-medium text-gray-700 mb-1">
+                {translate("search_complaints", language)}
+              </label>
+              <div className="flex gap-2">
+                <Input
+                  placeholder={translate("search_placeholder", language)}
+                  value={searchInput}
+                  onChange={(e) => setSearchInput(e.target.value)}
+                  onKeyPress={(e) => {
+                    if (e.key === 'Enter') {
+                      handleSearch();
+                    }
+                  }}
+                  className="flex-1"
+                />
+                <Button
+                  onClick={handleSearch}
+                  disabled={isSearching}
+                  className="bg-[#075E54] text-white hover:bg-[#075E54]/90"
+                >
+                  {isSearching ? (
+                    <LoaderCircle  className="w-4 h-4 animate-spin" />
+                  ) : (
+                    <Search className="w-4 h-4" />
+                  )}
+                </Button>
+              </div>
+            </div>
+          </div>
+
+          {/* Active Filters Display */}
+          {(selectedTaluka !== "All Talukas" || searchQuery) && (
+            <div className="flex flex-wrap gap-2">
+              {selectedTaluka !== "All Talukas" && (
+                <Badge variant="secondary" className="bg-blue-100 text-blue-800 p-1">
+                  {translate("filter_by_taluka", language)}: {selectedTaluka}
+                  <button
+                    onClick={() => handleTalukaFilter("All Talukas")}
+                    className="ml-1 text-blue-600 hover:text-blue-800"
+                  >
+                    <X className="w-3 h-3" />
+                  </button>
+                </Badge>
+              )}
+              {searchQuery && (
+                <Badge variant="secondary" className="bg-green-100 text-green-800 p-1">
+                  {translate("search_complaints", language)}: "{searchQuery}"
+                  <button
+                    onClick={() => {
+                      setSearchQuery("");
+                      setSearchInput("");
+                      setCurrentPage(1);
+                    }}
+                    className="ml-1 text-green-600 hover:text-green-800"
+                  >
+                    <X className="w-3 h-3 " />
+                  </button>
+                </Badge>
+              )}
+            </div>
+          )}
+        </div>
+      )}
 
       {/* Community Feed */}
       <div className="flex-1 overflow-y-auto">
         <div className="space-y-4 p-4">
-          {allComplaints.map((complaint) => (
+          {isLoading ? <LoaderCircle className="w-10 h-10 animate-spin absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 text-gray-500" /> : allComplaints.map((complaint) => (
             <CommunityComplaintCard
               key={complaint.id}
               complaint={complaint}

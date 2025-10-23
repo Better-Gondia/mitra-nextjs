@@ -330,9 +330,9 @@
     "marathi": "गोंदिया सार्वजनिक भिंत"
   },
   "see_what_others_are_reporting": {
-    "english": "See what others are reporting • Co-sign to support",
-    "hindi": "देखें अन्य लोग क्या रिपोर्ट कर रहे हैं • समर्थन के लिए सह-हस्ताक्षर करें",
-    "marathi": "इतर काय रिपोर्ट करत आहेत ते पहा • समर्थनासाठी सह-हस्ताक्षर करा"
+    "english": "See what others are reporting",
+    "hindi": "देखें अन्य लोग क्या रिपोर्ट कर रहे हैं",
+    "marathi": "इतर काय रिपोर्ट करत आहेत ते पहा"
   },
   "no_public_complaints": {
     "english": "No Public Complaints",
@@ -438,5 +438,45 @@
     "english": "Suggestion",
     "hindi": "सुझाव",
     "marathi": "सूचना"
+  },
+  "show_filters": {
+    "english": "Show Filters",
+    "hindi": "फिल्टर दिखाएं",
+    "marathi": "फिल्टर दाखवा"
+  },
+  "hide_filters": {
+    "english": "Hide Filters",
+    "hindi": "फिल्टर छुपाएं",
+    "marathi": "फिल्टर लपवा"
+  },
+  "filter_by_taluka": {
+    "english": "Filter by Taluka",
+    "hindi": "तालुका से फिल्टर करें",
+    "marathi": "तालुक्यानुसार फिल्टर करा"
+  },
+  "search_complaints": {
+    "english": "Search Complaints",
+    "hindi": "शिकायतें खोजें",
+    "marathi": "तक्रारी शोधा"
+  },
+  "search_placeholder": {
+    "english": "Search complaints...",
+    "hindi": "शिकायतें खोजें...",
+    "marathi": "तक्रारी शोधा..."
+  },
+  "select_taluka": {
+    "english": "Select Taluka",
+    "hindi": "तालुका चुनें",
+    "marathi": "तालुका निवडा"
+  },
+  "all_talukas": {
+    "english": "All Talukas",
+    "hindi": "सभी तालुके",
+    "marathi": "सर्व तालुके"
+  },
+  "taluka": {
+    "english": "Taluka",
+    "hindi": "तालुका",
+    "marathi": "तालुका"
   }
 }

@@ -285,12 +285,15 @@ export async function POST(request: NextRequest) {
           complaint.id,
           complaint.createdAt
         );
-        const shortMessage = getShortConfirmationMessage(
+        const whatsappConfirmationMessage = getShortConfirmationMessage(
           complaint.language,
           body.customerName,
           formattedComplaintId
         );
-        await sendWhatsAppText(body.mobileNo, shortMessage);
+  
+        const statusMessage = getUserLoggedUrlMessage(complaint.language, user.slug);
+  
+        await sendWhatsAppText(body.mobileNo, `${whatsappConfirmationMessage}\n\n${statusMessage}`);
         NextResponse.json({
           success: true,
           message: "Complaint Prematurely Submitted",
@@ -645,18 +648,26 @@ export async function POST(request: NextRequest) {
         updatedComplaint.createdAt
       );
 
-      const whatsappConfirmationMessage = await getWhatsappConfirmationMessage(
+      // const whatsappConfirmationMessage = await getWhatsappConfirmationMessage(
+      //   complaint.language,
+      //   body.customerName,
+      //   updatedComplaint.type || ComplaintType.COMPLAINT,
+      //   formattedComplaintId,
+      //   updatedComplaint.taluka || "Not specified",
+      //   updatedComplaint.description || "No description provided",
+      //   updatedComplaint.location || "Not specified",
+      //   body.mobileNo
+      // );
+
+      const whatsappConfirmationMessage = getShortConfirmationMessage(
         complaint.language,
         body.customerName,
-        updatedComplaint.type || ComplaintType.COMPLAINT,
-        formattedComplaintId,
-        updatedComplaint.taluka || "Not specified",
-        updatedComplaint.description || "No description provided",
-        updatedComplaint.location || "Not specified",
-        body.mobileNo
+        formattedComplaintId
       );
 
-      await sendWhatsAppText(body.mobileNo, whatsappConfirmationMessage);
+      const statusMessage = getUserLoggedUrlMessage(updatedComplaint.language, user.slug);
+
+      await sendWhatsAppText(body.mobileNo, `${whatsappConfirmationMessage}\n\n${statusMessage}`);
     }
 
     return NextResponse.json({

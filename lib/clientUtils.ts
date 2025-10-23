@@ -273,9 +273,7 @@ Your complaint has been received.
       year: "numeric",
       month: "long",
       day: "numeric",
-    })}
-
-Thank you for contacting Better Gondia Mitra! 🙏`,
+    })}`,
 
     [PrismaLanguage.HINDI]: `नमस्ते ${customerName}! 👋
 
@@ -287,9 +285,7 @@ Thank you for contacting Better Gondia Mitra! 🙏`,
       year: "numeric",
       month: "long",
       day: "numeric",
-    })}
-
-बेहतर गोंदिया मित्र से संपर्क करने के लिए धन्यवाद! 🙏`,
+    })}`,
 
     [PrismaLanguage.MARATHI]: `नमस्कार ${customerName}! 👋
 
@@ -301,9 +297,7 @@ Thank you for contacting Better Gondia Mitra! 🙏`,
       year: "numeric",
       month: "long",
       day: "numeric",
-    })}
-
-बेहतर गोंदिया मित्राशी संपर्क साधल्याबद्दल धन्यवाद! 🙏`,
+    })}`,
   };
 
   return messages[language] || messages[PrismaLanguage.ENGLISH];
