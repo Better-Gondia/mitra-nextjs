@@ -20,6 +20,7 @@ import {
   sendLanguageSpecificTemplate,
   sendTemplateMessage,
   sendInvalidMessageTemplate,
+  sendByeMessage,
 } from "@/app/actions/whatsapp";
 import { generateUniqueUserSlug } from "@/app/actions/slug";
 import {
@@ -65,7 +66,7 @@ interface ComplaintRequestBody {
 export async function POST(request: NextRequest) {
   try {
     const body: ComplaintRequestBody = await request.json();
-
+        
     // Validate required fields
     if (!body.mobileNo || !body.customerName) {
       return NextResponse.json(
@@ -94,14 +95,14 @@ export async function POST(request: NextRequest) {
         where: { userId: user.id },
       });
 
-      // Delete the user
-      await prisma.user.delete({
-        where: { id: user.id },
-      });
+      // // Delete the user
+      // await prisma.user.delete({
+      //   where: { id: user.id },
+      // });
 
       await sendWhatsAppText(
         body.mobileNo,
-        "Deleted the user for you and all your complaints"
+        "Deleted all your complaints"
       );
 
       return NextResponse.json({
@@ -133,6 +134,15 @@ export async function POST(request: NextRequest) {
         success: true,
         message: `Reset flow completed. Deleted ${deletedComplaints.count} incomplete complaints`,
         deletedComplaintsCount: deletedComplaints.count,
+      });
+    }
+
+    // Ending flow for some commands
+    if(body.message === "Bye For Now 👋🏻" || body.message === "फिर मिलेंगे 👋🏻" || body.message === "आत्तासाठी निरोप 👋"){
+      await sendByeMessage(body.mobileNo, body.message);
+      return NextResponse.json({
+        success: true,
+        message: "Bye message sent",
       });
     }
 
@@ -352,7 +362,7 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({
         success: true,
         message: "Reverted with Status URL",
-        complaintId: complaint.id,
+        complaintId: complaint && complaint.id ? complaint.id : undefined,
       });
     }
 
