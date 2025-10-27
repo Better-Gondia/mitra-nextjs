@@ -32,6 +32,11 @@ export const SharedComplaint = ({ complaintId }: { complaintId: string }) => {
     setSection("community");
     setCompId(Number(givenCompId));
 
+    // Store complaint ID for post-login redirect
+    if (typeof window !== "undefined") {
+      localStorage.setItem("pendingComplaintId", givenCompId);
+    }
+
     const currentUserData = localStorage.getItem("userData");
 
     if (currentUserData) {

@@ -5,6 +5,7 @@ import { generateComplaintIdFromDate, getBotMessage } from "@/lib/clientUtils";
 import { translateServer } from "@/lib/server-utils";
 import prisma from "@/prisma/db";
 import { ChatMessage, Language, SessionUser } from "@/types";
+import { ComplaintPhase } from "@prisma/client";
 import { getServerSession } from "next-auth";
 import { NextRequest } from "next/server";
 
@@ -65,6 +66,7 @@ export async function GET(req: NextRequest) {
       });
       const compComplaint = await prisma.complaint.findFirst({
         where: {
+          phase: ComplaintPhase.COMPLETED,
           id: compIdNum,
           ...(fetchOption == "my" && userIdNumber && { userId: userIdNumber }),
           ...((!user || user.role == "USER") &&
@@ -75,6 +77,7 @@ export async function GET(req: NextRequest) {
               { title: { contains: search, mode: "insensitive" } },
               { description: { contains: search, mode: "insensitive" } },
               { location: { contains: search, mode: "insensitive" } },
+              { id: Number(search) },
             ],
           }),
         },
@@ -88,6 +91,7 @@ export async function GET(req: NextRequest) {
       // Get total count for pagination
       totalCount = await prisma.complaint.count({
         where: {
+          phase: ComplaintPhase.COMPLETED,
           ...(fetchOption == "my" && userIdNumber && { userId: userIdNumber }),
           ...((!user || user.role == "USER") &&
             fetchOption == "all" && { isPublic: true }),
@@ -98,6 +102,7 @@ export async function GET(req: NextRequest) {
               { title: { contains: search, mode: "insensitive" } },
               { description: { contains: search, mode: "insensitive" } },
               { location: { contains: search, mode: "insensitive" } },
+              { id: Number(search) },
             ],
           }),
         },
@@ -106,6 +111,7 @@ export async function GET(req: NextRequest) {
       // Fetch the rest with pagination, excluding compId
       const restComplaints = await prisma.complaint.findMany({
         where: {
+          phase: ComplaintPhase.COMPLETED,
           ...(fetchOption == "my" && userIdNumber && { userId: userIdNumber }),
           ...((!user || user.role == "USER") &&
             fetchOption == "all" && { isPublic: true }),
@@ -116,6 +122,7 @@ export async function GET(req: NextRequest) {
               { title: { contains: search, mode: "insensitive" } },
               { description: { contains: search, mode: "insensitive" } },
               { location: { contains: search, mode: "insensitive" } },
+              { id: Number(search) },
             ],
           }),
         },
@@ -138,6 +145,7 @@ export async function GET(req: NextRequest) {
       // Get total count for pagination
       totalCount = await prisma.complaint.count({
         where: {
+          phase: ComplaintPhase.COMPLETED,
           ...(fetchOption == "my" && userIdNumber && { userId: userIdNumber }),
           ...((!user || user.role == "USER") &&
             fetchOption == "all" && { isPublic: true }),
@@ -147,6 +155,7 @@ export async function GET(req: NextRequest) {
               { title: { contains: search, mode: "insensitive" } },
               { description: { contains: search, mode: "insensitive" } },
               { location: { contains: search, mode: "insensitive" } },
+              { id: Number(search) },
             ],
           }),
         },
@@ -154,6 +163,7 @@ export async function GET(req: NextRequest) {
 
       complaints = await prisma.complaint.findMany({
         where: {
+          phase: ComplaintPhase.COMPLETED,
           ...(fetchOption == "my" && userIdNumber && { userId: userIdNumber }),
           ...((!user || user.role == "USER") &&
             fetchOption == "all" && { isPublic: true }),
@@ -163,6 +173,7 @@ export async function GET(req: NextRequest) {
               { title: { contains: search, mode: "insensitive" } },
               { description: { contains: search, mode: "insensitive" } },
               { location: { contains: search, mode: "insensitive" } },
+              { id: Number(search) },
             ],
           }),
         },
@@ -219,12 +230,18 @@ export async function GET(req: NextRequest) {
       longitude: complaint.longitude,
       status: complaint.status,
       taluka: complaint.taluka,
+      type: complaint.type,
+      priority: complaint.priority,
+      department: complaint.department,
+      subcategory: complaint.subcategory,
+      language: complaint.language,
 
       media: complaint.media,
 
       isMediaApproved: complaint.isMediaApproved,
       isPublic: complaint.isPublic,
       coSignCount: complaint.coSignCount,
+      reportCount: complaint.reportCount,
       isCoSigned: userCoSignedComplaintIds.has(complaint.id),
       isReported: userReportedComplaintIds.has(complaint.id),
 

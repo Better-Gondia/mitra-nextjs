@@ -88,9 +88,28 @@ export const CommunityComplaintCard = ({
               </span>
             </div>
             <div>
-              <p className="font-medium text-sm ">
-                {generateComplaintIdFromDate(complaint.id, complaint.createdAt)}
-              </p>
+              <div className="flex items-center gap-2">
+                <p className="font-medium text-sm ">
+                  {generateComplaintIdFromDate(
+                    complaint.id,
+                    complaint.createdAt
+                  )}
+                </p>
+                {complaint.type && (
+                  <Badge
+                    variant="outline"
+                    className={`text-xs px-2 py-0.5 ${
+                      complaint.type === "SUGGESTION"
+                        ? "bg-orange-50 text-orange-700 border-orange-300"
+                        : "bg-blue-50 text-blue-700 border-blue-300"
+                    }`}
+                  >
+                    {complaint.type === "SUGGESTION"
+                      ? "Suggestion"
+                      : "Complaint"}
+                  </Badge>
+                )}
+              </div>
               <p className="text-xs ">
                 {/* Ward {Math.floor(Math.random() * 5) + 1} •{" "} */}
                 {formatTimeAgo(complaint.createdAt)}

@@ -66,7 +66,7 @@ interface ComplaintRequestBody {
 export async function POST(request: NextRequest) {
   try {
     const body: ComplaintRequestBody = await request.json();
-        
+
     // Validate required fields
     if (!body.mobileNo || !body.customerName) {
       return NextResponse.json(
@@ -100,10 +100,7 @@ export async function POST(request: NextRequest) {
       //   where: { id: user.id },
       // });
 
-      await sendWhatsAppText(
-        body.mobileNo,
-        "Deleted all your complaints"
-      );
+      await sendWhatsAppText(body.mobileNo, "Deleted all your complaints");
 
       return NextResponse.json({
         success: true,
@@ -138,7 +135,11 @@ export async function POST(request: NextRequest) {
     }
 
     // Ending flow for some commands
-    if(body.message === "Bye For Now 👋🏻" || body.message === "फिर मिलेंगे 👋🏻" || body.message === "आत्तासाठी निरोप 👋"){
+    if (
+      body.message === "Bye For Now 👋🏻" ||
+      body.message === "फिर मिलेंगे 👋🏻" ||
+      body.message === "आत्तासाठी निरोप 👋"
+    ) {
       await sendByeMessage(body.mobileNo, body.message);
       return NextResponse.json({
         success: true,
@@ -300,10 +301,16 @@ export async function POST(request: NextRequest) {
           body.customerName,
           formattedComplaintId
         );
-  
-        const statusMessage = getUserLoggedUrlMessage(complaint.language, user.slug);
-  
-        await sendWhatsAppText(body.mobileNo, `${whatsappConfirmationMessage}\n\n${statusMessage}`);
+
+        const statusMessage = getUserLoggedUrlMessage(
+          complaint.language,
+          user.slug
+        );
+
+        await sendWhatsAppText(
+          body.mobileNo,
+          `${whatsappConfirmationMessage}\n\n${statusMessage}`
+        );
         NextResponse.json({
           success: true,
           message: "Complaint Prematurely Submitted",
@@ -675,9 +682,15 @@ export async function POST(request: NextRequest) {
         formattedComplaintId
       );
 
-      const statusMessage = getUserLoggedUrlMessage(updatedComplaint.language, user.slug);
+      const statusMessage = getUserLoggedUrlMessage(
+        updatedComplaint.language,
+        user.slug
+      );
 
-      await sendWhatsAppText(body.mobileNo, `${whatsappConfirmationMessage}\n\n${statusMessage}`);
+      await sendWhatsAppText(
+        body.mobileNo,
+        `${whatsappConfirmationMessage}\n\n${statusMessage}`
+      );
     }
 
     return NextResponse.json({

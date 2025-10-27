@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import prisma from "@/prisma/db";
 import { getUserIdFromSlug } from "@/app/actions/user";
+import { ComplaintPhase } from "@prisma/client";
 
 export async function POST(
   req: NextRequest
@@ -39,7 +40,7 @@ export async function POST(
 
     // Check if complaint exists
     const complaint = await prisma.complaint.findUnique({
-      where: { id: complaintId },
+      where: { id: complaintId, phase: ComplaintPhase.COMPLETED },
     });
 
     if (!complaint) {

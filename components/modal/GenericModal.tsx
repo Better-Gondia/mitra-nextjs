@@ -70,7 +70,16 @@ export function GenericModal() {
             onClose={() => setIsOpen(false)}
             onUserFound={(slug) => {
               setIsOpen(false);
-              router.push(`/?user=${slug}`);
+              // Check if there's a pending complaint ID for redirect
+              const pendingComplaintId =
+                localStorage.getItem("pendingComplaintId");
+              if (pendingComplaintId) {
+                // Clear the pending complaint ID and redirect with search parameter
+                localStorage.removeItem("pendingComplaintId");
+                router.push(`/?user=${slug}&&search=${pendingComplaintId}`);
+              } else {
+                router.push(`/?user=${slug}`);
+              }
             }}
             onUserNotFound={() => {
               setIsOpen(false);

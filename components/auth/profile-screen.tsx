@@ -88,6 +88,18 @@ export default function ProfileScreen({
       setAuthStep("complete");
       localStorage.setItem("authStep", "complete");
 
+      // Check if there's a pending complaint ID for redirect
+      const pendingComplaintId = localStorage.getItem("pendingComplaintId");
+      if (pendingComplaintId && newUser.slug) {
+        // Clear the pending complaint ID
+        localStorage.removeItem("pendingComplaintId");
+        // Redirect to home with userSlug and search params
+        if (typeof window !== "undefined") {
+          window.location.href = `/?user=${newUser.slug}&&search=${pendingComplaintId}`;
+          return;
+        }
+      }
+
       // queryClient.invalidateQueries({ queryKey: ["/api/auth/user"] });
       onNext();
     },

@@ -7,6 +7,7 @@ export const initUserData: User = {
   // authStep: "language",
   // language: "english",
   mobile: "0",
+  slug: "",
   address: "",
 };
 

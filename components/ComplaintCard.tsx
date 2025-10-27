@@ -23,8 +23,12 @@ import {
   EyeOff,
   Building2,
   MapPinIcon,
+  BadgeCheck,
+  Share2,
 } from "lucide-react";
 import { useState } from "react";
+import { translate } from "@/lib/translator";
+import { useLanguage } from "@/store/language";
 
 interface ComplaintCardProps {
   complaint: Complaint;
@@ -32,10 +36,23 @@ interface ComplaintCardProps {
 }
 
 export const ComplaintCard = ({ complaint }: ComplaintCardProps) => {
+  const language = useLanguage((state) => state.language);
   const [showFullDescription, setShowFullDescription] = useState(false);
   const [selectedMediaIndex, setSelectedMediaIndex] = useState<number | null>(
     null
   );
+
+  const handleShareWhatsApp = () => {
+    const complaintId = generateComplaintIdFromDate(
+      complaint.id,
+      complaint.createdAt
+    );
+    const baseUrl = window.location.origin;
+    const shareUrl = `${baseUrl}/${complaint.id}`;
+    const message = `Check out this ${complaint.type || "complaint"} (${complaintId}):\n\n${shareUrl}`;
+    const whatsappUrl = `https://wa.me/?text=${encodeURIComponent(message)}`;
+    window.open(whatsappUrl, "_blank");
+  };
 
   const getStatusIcon = (status: string) => {
     switch (status.toLowerCase()) {
@@ -104,13 +121,35 @@ export const ComplaintCard = ({ complaint }: ComplaintCardProps) => {
               {/* <span className="text-2xl">
                 {getCategoryIcon(complaint.category || "general")}
               </span> */}
-              <div>
-                <h2 className="text-lg font-bold text-gray-900 font-mono">
-                  {generateComplaintIdFromDate(
-                    complaint.id,
-                    complaint.createdAt
+              <div className="flex-1">
+                <div className="flex items-center gap-2">
+                  <h2 className="text-lg font-bold text-gray-900 font-mono">
+                    {generateComplaintIdFromDate(
+                      complaint.id,
+                      complaint.createdAt
+                    )}
+                  </h2>
+                  {complaint.type && (
+                    <Badge
+                      variant="outline"
+                      className={`text-xs px-2 py-0.5 ${
+                        complaint.type === "SUGGESTION"
+                          ? "bg-orange-50 text-orange-700 border-orange-300"
+                          : "bg-blue-50 text-blue-700 border-blue-300"
+                      }`}
+                    >
+                      {complaint.type === "SUGGESTION"
+                        ? "Suggestion"
+                        : "Complaint"}
+                    </Badge>
                   )}
-                </h2>
+                  {complaint.isMediaApproved && (
+                    <BadgeCheck
+                      className="w-5 h-5 text-green-600"
+                      // title="Verified"
+                    />
+                  )}
+                </div>
                 <p className="text-xs text-gray-500">
                   {formatTimeAgo(complaint.createdAt)}
                 </p>
@@ -149,6 +188,16 @@ export const ComplaintCard = ({ complaint }: ComplaintCardProps) => {
         {/* Status, Priority and Type */}
         <div className="flex items-center justify-between flex-wrap gap-2">
           <div className="flex items-center gap-2 flex-wrap">
+            {/* Type badge (Complaint/Suggestion) */}
+            {/* {complaint.type && (
+              <Badge
+                // variant="outline"
+                className={`bg-gray-100 text-gray-800 px-3 py-1.5 text-xs font-semibold`}
+              >
+                {complaint.type === "SUGGESTION" ? "Suggestion" : "Complaint"}
+              </Badge>
+            )} */}
+
             <Badge
               className={cn(
                 "px-3 py-1.5 text-xs font-semibold",
@@ -160,7 +209,7 @@ export const ComplaintCard = ({ complaint }: ComplaintCardProps) => {
             </Badge>
 
             {/* Priority badge */}
-            {complaint.priority && (
+            {/* {complaint.priority && (
               <Badge
                 className={cn(
                   "px-2 py-1 text-xs font-medium",
@@ -170,17 +219,7 @@ export const ComplaintCard = ({ complaint }: ComplaintCardProps) => {
                 {complaint.priority === "HIGH" ? "🔴" : "🟡"}{" "}
                 {complaint.priority}
               </Badge>
-            )}
-
-            {/* Type badge (Complaint/Suggestion) */}
-            {complaint.type && (
-              <Badge
-                variant="outline"
-                className="text-xs bg-purple-50 text-purple-700 border-purple-200"
-              >
-                {complaint.type === "SUGGESTION" ? "💡" : "⚠️"} {complaint.type}
-              </Badge>
-            )}
+            )} */}
           </div>
 
           {/* Co-sign count if available */}
@@ -404,6 +443,20 @@ export const ComplaintCard = ({ complaint }: ComplaintCardProps) => {
                   </div>
                 </div>
               )}
+          </div>
+        )}
+
+        {/* WhatsApp Share Button */}
+        {complaint.isPublic && (
+          <div className="pt-3 pb-2 border-t border-gray-100">
+            <Button
+              onClick={handleShareWhatsApp}
+              className="w-full bg-green-500 hover:bg-green-600 text-white text-sm font-medium py-2"
+              variant="default"
+            >
+              <Share2 className="w-4 h-4 mr-2" />
+              {translate("share_on_whatsapp", language)}
+            </Button>
           </div>
         )}
 

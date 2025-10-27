@@ -34,38 +34,6 @@ export function MobileLookupModal({
   onUserNotFound,
 }: MobileLookupModalProps) {
   const [mobile, setMobile] = useState("");
-  const [showCreateOption, setShowCreateOption] = useState(false);
-
-  const lookupUserMutation = useMutation({
-    mutationFn: async (mobileNumber: string): Promise<UserLookupResponse> => {
-      const response = await apiRequest("POST", "/api/users/lookup", {
-        mobileNumber,
-      });
-      
-      // Check if the response is successful
-      if (!response.ok) {
-        if (response.status === 404) {
-          // User not found - this is expected, not an error
-          return { success: false, error: "User not found" };
-        }
-        // Other errors should be thrown
-        throw new Error(`HTTP ${response.status}`);
-      }
-      
-      return response.json();
-    },
-    onSuccess: (data) => {
-      if (data.success && data.user) {
-        onUserFound(data.user.slug);
-      } else {
-        // User not found, show create option
-        setShowCreateOption(true);
-      }
-    },
-    onError: () => {
-      onUserNotFound();
-    },
-  });
 
   const createUserMutation = useMutation({
     mutationFn: async (mobileNumber: string): Promise<UserLookupResponse> => {
@@ -86,13 +54,36 @@ export function MobileLookupModal({
     },
   });
 
-  const handleCreateUser = () => {
-    createUserMutation.mutate(mobile);
-  };
+  const lookupUserMutation = useMutation({
+    mutationFn: async (mobileNumber: string): Promise<UserLookupResponse> => {
+      const response = await apiRequest("POST", "/api/users/lookup", {
+        mobileNumber,
+      });
 
-  const handleUserNotFound = () => {
-    onUserNotFound();
-  };
+      // Check if the response is successful
+      if (!response.ok) {
+        if (response.status === 404) {
+          // User not found - automatically create user
+          return { success: false, error: "User not found" };
+        }
+        // Other errors should be thrown
+        throw new Error(`HTTP ${response.status}`);
+      }
+
+      return response.json();
+    },
+    onSuccess: (data) => {
+      if (data.success && data.user) {
+        onUserFound(data.user.slug);
+      } else {
+        // User not found, automatically create user
+        createUserMutation.mutate(mobile);
+      }
+    },
+    onError: () => {
+      createUserMutation.mutate(mobile);
+    },
+  });
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
@@ -140,9 +131,8 @@ export function MobileLookupModal({
             </button>
           </div> */}
         </div>
-      {/* </div> */}
+        {/* </div> */}
 
-      {!showCreateOption ? (
         <form onSubmit={handleSubmit} className="space-y-4">
           <div>
             <Label className="block text-sm font-medium mb-2">
@@ -160,7 +150,9 @@ export function MobileLookupModal({
                 value={mobile}
                 onChange={(e) => setMobile(e.target.value.replace(/\D/g, ""))}
                 required
-                disabled={lookupUserMutation.isPending || createUserMutation.isPending}
+                disabled={
+                  lookupUserMutation.isPending || createUserMutation.isPending
+                }
               />
             </div>
             <p className="text-xs text-gray-500 mt-1">
@@ -174,7 +166,9 @@ export function MobileLookupModal({
               variant="outline"
               className="flex-1 border-gray-300 text-gray-700 py-3 rounded-lg font-medium hover:bg-gray-50 transition-colors"
               onClick={onClose}
-              disabled={lookupUserMutation.isPending || createUserMutation.isPending}
+              disabled={
+                lookupUserMutation.isPending || createUserMutation.isPending
+              }
             >
               Cancel
             </Button>
@@ -182,12 +176,18 @@ export function MobileLookupModal({
             <Button
               type="submit"
               className="flex-1 bg-gradient-to-r from-[#075E54] to-[#008F6F] text-white py-3 rounded-lg font-medium hover:opacity-90 transition-opacity disabled:opacity-50"
-              disabled={mobile.length !== 10 || lookupUserMutation.isPending || createUserMutation.isPending}
+              disabled={
+                mobile.length !== 10 ||
+                lookupUserMutation.isPending ||
+                createUserMutation.isPending
+              }
             >
-              {lookupUserMutation.isPending ? (
+              {lookupUserMutation.isPending || createUserMutation.isPending ? (
                 <>
                   <LoaderCircle className="w-4 h-4 animate-spin" />
-                  Looking up...
+                  {createUserMutation.isPending
+                    ? "Creating..."
+                    : "Looking up..."}
                 </>
               ) : (
                 "Find Account"
@@ -195,61 +195,15 @@ export function MobileLookupModal({
             </Button>
           </div>
         </form>
-      ) : (
-        <div className="space-y-4">
-          <div className="text-center">
-            <div className="w-16 h-16 bg-yellow-100 rounded-full flex items-center justify-center mx-auto mb-4">
-              <span className="text-yellow-600 text-2xl">⚠️</span>
-            </div>
-            <h3 className="text-lg font-semibold text-gray-900 mb-2">
-              Account Not Found
-            </h3>
-            <p className="text-gray-600 text-sm mb-4">
-              No account found for mobile number <strong>+91 {mobile}</strong>
-            </p>
-            <p className="text-gray-500 text-xs">
-              Would you like to create a new account with this mobile number?
+
+        {(lookupUserMutation.error || createUserMutation.error) && (
+          <div className="mt-4 p-3 bg-red-50 border border-red-200 rounded-lg">
+            <p className="text-red-700 text-sm">
+              Failed to process request. Please try again.
             </p>
           </div>
-
-          <div className="flex space-x-3">
-            <Button
-              type="button"
-              variant="outline"
-              className="flex-1 border-gray-300 text-gray-700 py-3 rounded-lg font-medium hover:bg-gray-50 transition-colors"
-              onClick={handleUserNotFound}
-              disabled={createUserMutation.isPending}
-            >
-              No, Go Back
-            </Button>
-
-            <Button
-              type="button"
-              className="flex-1 bg-gradient-to-r from-[#075E54] to-[#008F6F] text-white py-3 rounded-lg font-medium hover:opacity-90 transition-opacity disabled:opacity-50"
-              onClick={handleCreateUser}
-              disabled={createUserMutation.isPending}
-            >
-              {createUserMutation.isPending ? (
-                <>
-                  <LoaderCircle className="w-4 h-4 animate-spin" />
-                  Creating...
-                </>
-              ) : (
-                "Create Account"
-              )}
-            </Button>
-          </div>
-        </div>
-      )}
-
-      {(lookupUserMutation.error || createUserMutation.error) && (
-        <div className="mt-4 p-3 bg-red-50 border border-red-200 rounded-lg">
-          <p className="text-red-700 text-sm">
-            Failed to process request. Please try again.
-          </p>
-        </div>
-      )}
-    </div>
+        )}
+      </div>
     </div>
   );
 }
