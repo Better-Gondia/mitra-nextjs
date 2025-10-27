@@ -30,6 +30,23 @@ export async function PATCH(req: NextRequest) {
   if (!id || !role) {
     return NextResponse.json({ error: "Missing id or role" }, { status: 400 });
   }
+
+  // Prevent changing role to SUPERADMIN
+  if (role === "SUPERADMIN") {
+    return NextResponse.json(
+      { error: "Cannot change role to SUPERADMIN" },
+      { status: 400 }
+    );
+  }
+
+  // Prevent changing own role
+  if (id === user.id) {
+    return NextResponse.json(
+      { error: "Cannot change your own role" },
+      { status: 400 }
+    );
+  }
+
   try {
     const updated = await prisma.user.update({
       where: { id: Number(id) },

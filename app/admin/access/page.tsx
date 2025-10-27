@@ -24,6 +24,11 @@ export default function AdminAccessPage() {
   const [loading, setLoading] = useState(true);
   const [updatingId, setUpdatingId] = useState<number | null>(null);
 
+  // Get current user's ID
+  const currentUserId = session.data?.user?.id
+    ? parseInt(session.data.user.id)
+    : null;
+
   useEffect(() => {
     if (session.status === "loading") return;
     const userRole = session.data?.user?.role;
@@ -57,6 +62,18 @@ export default function AdminAccessPage() {
     id: number,
     newRole: "USER" | "ADMIN" | "SUPERADMIN"
   ) => {
+    // Prevent changing to SUPERADMIN
+    if (newRole === "SUPERADMIN") {
+      toast.error("Cannot change role to SUPERADMIN");
+      return;
+    }
+
+    // Prevent changing own role
+    if (currentUserId && id === currentUserId) {
+      toast.error("Cannot change your own role");
+      return;
+    }
+
     setUpdatingId(id);
     const toastId = toast.loading("Updating role...");
     try {
@@ -84,9 +101,9 @@ export default function AdminAccessPage() {
   };
 
   return (
-    <div className="min-h-[100dvh] bg-gradient-to-b from-[#f8fafc] to-[#e0e7ef] flex flex-col">
+    <div className="h-[100dvh] bg-gradient-to-b from-[#f8fafc] to-[#e0e7ef] flex flex-col overflow-hidden">
       {/* Sticky header */}
-      <header className="sticky top-0 z-20 bg-white/90 backdrop-blur border-b border-gray-200 px-4 py-3 flex items-center justify-between shadow-sm">
+      <header className="sticky top-0 z-20 bg-white/90 backdrop-blur border-b border-gray-200 px-4 py-3 flex items-center justify-between shadow-sm flex-shrink-0">
         <ArrowLeft onClick={() => router.back()} />
         <h1 className="text-lg font-bold tracking-tight">
           Google Users Management
@@ -94,16 +111,18 @@ export default function AdminAccessPage() {
         {/* <span className="text-xs text-gray-500 font-mono">Admin Panel</span> */}
         <AdminDropdown />
       </header>
-      <main className="flex-1 flex flex-col gap-4 p-2 pb-6 max-w-md w-full mx-auto">
+      <main className="flex-1 overflow-y-auto flex flex-col gap-4 max-w-md w-full mx-auto">
         {loading ? (
-          <Spinner className="text-black" />
+          <div className="flex-1 flex items-center justify-center p-4">
+            <Spinner className="text-black" />
+          </div>
         ) : users.length === 0 ? (
-          <div className="flex-1 flex flex-col items-center justify-center text-center text-gray-500 gap-2">
+          <div className="flex-1 flex flex-col items-center justify-center text-center text-gray-500 gap-2 p-4">
             <span className="text-5xl">👤</span>
             <span className="font-semibold">No Google users found</span>
           </div>
         ) : (
-          <div className="flex flex-col gap-3 mt-2">
+          <div className="flex flex-col gap-3 p-2 pb-24 mb-16">
             {users.map((user) => (
               <div
                 key={user.id}
@@ -125,7 +144,8 @@ export default function AdminAccessPage() {
                     <select
                       value={user.role}
                       disabled={
-                        user.role === "SUPERADMIN" || updatingId === user.id
+                        updatingId === user.id ||
+                        !!(currentUserId && user.id === currentUserId)
                       }
                       onChange={(e) =>
                         handleRoleChange(
@@ -133,45 +153,39 @@ export default function AdminAccessPage() {
                           e.target.value as User["role"]
                         )
                       }
-                      className="rounded px-2 py-1 border border-gray-300 text-xs focus:ring-2 focus:ring-blue-400 focus:outline-none bg-gray-50"
+                      className="rounded px-2 py-1 border border-gray-300 text-xs focus:ring-2 focus:ring-blue-400 focus:outline-none bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed"
                     >
                       <option value="USER">USER</option>
                       <option value="ADMIN">ADMIN</option>
-                      <option value="SUPERADMIN" disabled>
-                        SUPERADMIN
+                      <option value="COLLECTOR_TEAM">COLLECTOR_TEAM</option>
+                      <option value="DEPARTMENT_TEAM">DEPARTMENT_TEAM</option>
+                      <option value="SUPERINTENDENT_OF_POLICE">
+                        SUPERINTENDENT_OF_POLICE
                       </option>
+                      <option value="MP_RAJYA_SABHA">MP_RAJYA_SABHA</option>
+                      {user.role === "SUPERADMIN" && (
+                        <option value="SUPERADMIN" disabled>
+                          SUPERADMIN
+                        </option>
+                      )}
                     </select>
                   </div>
                 </div>
-                <div className="flex gap-2 mt-1">
-                  {updatingId === user.id ? (
+                {updatingId === user.id && (
+                  <div className="flex gap-2 mt-1">
                     <button
                       className="flex-1 bg-gray-200 text-gray-500 rounded py-2 text-sm font-semibold cursor-not-allowed"
                       disabled
                     >
                       Updating...
                     </button>
-                  ) : user.role !== "SUPERADMIN" && user.role !== "ADMIN" ? (
-                    <button
-                      className="flex-1 bg-blue-500 hover:bg-blue-600 text-white rounded py-2 text-sm font-semibold transition-colors"
-                      onClick={() => handleRoleChange(user.id, "ADMIN")}
-                    >
-                      Make Admin
-                    </button>
-                  ) : (
-                    <span className="flex-1 text-center text-xs text-gray-400 py-2">
-                      -
-                    </span>
-                  )}
-                </div>
+                  </div>
+                )}
               </div>
             ))}
           </div>
         )}
       </main>
-      <footer className="mt-auto py-2 text-center text-xs text-gray-400">
-        &copy; {new Date().getFullYear()} Better Gondia
-      </footer>
     </div>
   );
 }
