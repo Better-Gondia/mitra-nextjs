@@ -77,7 +77,9 @@ export async function GET(req: NextRequest) {
               { title: { contains: search, mode: "insensitive" } },
               { description: { contains: search, mode: "insensitive" } },
               { location: { contains: search, mode: "insensitive" } },
-              { id: Number(search) },
+              ...(!isNaN(Number(search)) && Number(search) > 0
+                ? [{ id: Number(search) }]
+                : []),
             ],
           }),
         },
@@ -102,7 +104,9 @@ export async function GET(req: NextRequest) {
               { title: { contains: search, mode: "insensitive" } },
               { description: { contains: search, mode: "insensitive" } },
               { location: { contains: search, mode: "insensitive" } },
-              { id: Number(search) },
+              ...(!isNaN(Number(search)) && Number(search) > 0
+                ? [{ id: Number(search) }]
+                : []),
             ],
           }),
         },
@@ -122,7 +126,9 @@ export async function GET(req: NextRequest) {
               { title: { contains: search, mode: "insensitive" } },
               { description: { contains: search, mode: "insensitive" } },
               { location: { contains: search, mode: "insensitive" } },
-              { id: Number(search) },
+              ...(!isNaN(Number(search)) && Number(search) > 0
+                ? [{ id: Number(search) }]
+                : []),
             ],
           }),
         },
@@ -155,7 +161,9 @@ export async function GET(req: NextRequest) {
               { title: { contains: search, mode: "insensitive" } },
               { description: { contains: search, mode: "insensitive" } },
               { location: { contains: search, mode: "insensitive" } },
-              { id: Number(search) },
+              ...(!isNaN(Number(search)) && Number(search) > 0
+                ? [{ id: Number(search) }]
+                : []),
             ],
           }),
         },
@@ -173,7 +181,9 @@ export async function GET(req: NextRequest) {
               { title: { contains: search, mode: "insensitive" } },
               { description: { contains: search, mode: "insensitive" } },
               { location: { contains: search, mode: "insensitive" } },
-              { id: Number(search) },
+              ...(!isNaN(Number(search)) && Number(search) > 0
+                ? [{ id: Number(search) }]
+                : []),
             ],
           }),
         },

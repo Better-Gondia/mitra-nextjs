@@ -97,6 +97,8 @@ export const initializeComplaint = async (userId: number, mobileNo: string) => {
       userId: userId,
       phase: ComplaintPhase.INIT,
       language: Language.ENGLISH,
+      isPublic: true,
+      isMediaApproved: true,
     },
   });
   await sendTemplateMessage(mobileNo, process.env.LANGUAGE || "");

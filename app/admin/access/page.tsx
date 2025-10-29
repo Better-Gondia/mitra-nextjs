@@ -128,7 +128,7 @@ export default function AdminAccessPage() {
                 key={user.id}
                 className="rounded-xl bg-white shadow p-4 flex flex-col gap-2 border border-gray-100"
               >
-                <div className="flex items-center gap-3">
+                <div className="flex flex-col items-center gap-3">
                   <div className="flex-shrink-0 w-10 h-10 rounded-full bg-gradient-to-br from-blue-200 to-blue-400 flex items-center justify-center text-lg font-bold text-white">
                     {user.name?.[0] || "?"}
                   </div>
