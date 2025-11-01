@@ -182,6 +182,16 @@ model Complaint {
   coSignCount        Int      @default(0)
   reportCount        Int      @default(0)
   linkedComplaintIds String[] @default([])
+  
+  // Split and merge fields
+  displayId          String?  // For split IDs like "25-1", "25-2"
+  parentComplaintId  Int?     // Original complaint for splits
+  splitIndex         Int?     // Track split order
+  mergedIntoComplaintId Int?  // Track merged complaints
+  originalComplaintIds Int[]  @default([]) // Source complaints in merged case
+  isSplit            Boolean  @default(false)
+  isMerged           Boolean  @default(false)
+  
   createdAt          DateTime @default(now())
   updatedAt          DateTime @updatedAt
 
@@ -195,6 +205,8 @@ model Complaint {
   @@index([department])
   @@index([priority])
   @@index([category, subcategory])
+  @@index([parentComplaintId])
+  @@index([mergedIntoComplaintId])
 }
 
 model ComplaintHistory {
