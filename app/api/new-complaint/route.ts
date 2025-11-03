@@ -20,6 +20,7 @@ import {
   sendLanguageSpecificTemplate,
   sendTemplateMessage,
   sendInvalidMessageTemplate,
+  sendByeMessage,
 } from "@/app/actions/whatsapp";
 import { generateUniqueUserSlug } from "@/app/actions/slug";
 import {
@@ -94,15 +95,12 @@ export async function POST(request: NextRequest) {
         where: { userId: user.id },
       });
 
-      // Delete the user
-      await prisma.user.delete({
-        where: { id: user.id },
-      });
+      // // Delete the user
+      // await prisma.user.delete({
+      //   where: { id: user.id },
+      // });
 
-      await sendWhatsAppText(
-        body.mobileNo,
-        "Deleted the user for you and all your complaints"
-      );
+      await sendWhatsAppText(body.mobileNo, "Deleted all your complaints");
 
       return NextResponse.json({
         success: true,
@@ -133,6 +131,19 @@ export async function POST(request: NextRequest) {
         success: true,
         message: `Reset flow completed. Deleted ${deletedComplaints.count} incomplete complaints`,
         deletedComplaintsCount: deletedComplaints.count,
+      });
+    }
+
+    // Ending flow for some commands
+    if (
+      body.message === "Bye For Now 👋🏻" ||
+      body.message === "फिर मिलेंगे 👋🏻" ||
+      body.message === "आत्तासाठी निरोप 👋"
+    ) {
+      await sendByeMessage(body.mobileNo, body.message);
+      return NextResponse.json({
+        success: true,
+        message: "Bye message sent",
       });
     }
 
@@ -290,10 +301,16 @@ export async function POST(request: NextRequest) {
           body.customerName,
           formattedComplaintId
         );
-  
-        const statusMessage = getUserLoggedUrlMessage(complaint.language, user.slug);
-  
-        await sendWhatsAppText(body.mobileNo, `${whatsappConfirmationMessage}\n\n${statusMessage}`);
+
+        const statusMessage = getUserLoggedUrlMessage(
+          complaint.language,
+          user.slug
+        );
+
+        await sendWhatsAppText(
+          body.mobileNo,
+          `${whatsappConfirmationMessage}\n\n${statusMessage}`
+        );
         NextResponse.json({
           success: true,
           message: "Complaint Prematurely Submitted",
@@ -352,7 +369,7 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({
         success: true,
         message: "Reverted with Status URL",
-        complaintId: complaint.id,
+        complaintId: complaint && complaint.id ? complaint.id : undefined,
       });
     }
 
@@ -665,9 +682,15 @@ export async function POST(request: NextRequest) {
         formattedComplaintId
       );
 
-      const statusMessage = getUserLoggedUrlMessage(updatedComplaint.language, user.slug);
+      const statusMessage = getUserLoggedUrlMessage(
+        updatedComplaint.language,
+        user.slug
+      );
 
-      await sendWhatsAppText(body.mobileNo, `${whatsappConfirmationMessage}\n\n${statusMessage}`);
+      await sendWhatsAppText(
+        body.mobileNo,
+        `${whatsappConfirmationMessage}\n\n${statusMessage}`
+      );
     }
 
     return NextResponse.json({

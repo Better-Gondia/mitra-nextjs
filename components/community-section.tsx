@@ -28,7 +28,13 @@ import { generateComplaintIdFromDate } from "@/lib/clientUtils";
 import { useCompId } from "@/store/compId";
 import { Button } from "./ui/button";
 import { Input } from "./ui/input";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "./ui/select";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "./ui/select";
 import { Badge } from "./ui/badge";
 import { translate } from "@/lib/translator";
 import { useLanguage } from "@/store/language";
@@ -62,7 +68,7 @@ const TALUKA_OPTIONS = [
   "Deori",
   "Salekasa",
   "Sadak Arjuni",
-  "All Talukas"
+  "All Talukas",
 ];
 
 export default function CommunitySection({
@@ -93,7 +99,7 @@ export default function CommunitySection({
   const [allComplaints, setAllComplaints] = useState<Complaint[]>([]);
   const [hasMore, setHasMore] = useState(true);
   const [isLoadingMore, setIsLoadingMore] = useState(false);
-  
+
   // Filter and search states
   const [selectedTaluka, setSelectedTaluka] = useState<string>("All Talukas");
   const [searchInput, setSearchInput] = useState<string>("");
@@ -101,9 +107,28 @@ export default function CommunitySection({
   const [isSearching, setIsSearching] = useState(false);
   const [showFilters, setShowFilters] = useState(false);
 
+  // Read search parameter from URL on mount
+  useEffect(() => {
+    if (typeof window !== "undefined") {
+      const urlParams = new URLSearchParams(window.location.search);
+      // Handle both & and && separators (browser converts && to &)
+      const searchParam = urlParams.get("search");
+      if (searchParam) {
+        setSearchQuery(searchParam);
+        setSearchInput(searchParam);
+      }
+    }
+  }, []);
+
   const { data: complaintsData, isLoading } =
     useQuery<PaginatedComplaintsResponse>({
-      queryKey: ["/api/complaints", user, selectedTaluka, searchQuery, currentPage],
+      queryKey: [
+        "/api/complaints",
+        user,
+        selectedTaluka,
+        searchQuery,
+        currentPage,
+      ],
       queryFn: async () => {
         const params = new URLSearchParams({
           userSlug: user || "",
@@ -114,7 +139,7 @@ export default function CommunitySection({
           ...(selectedTaluka !== "All Talukas" && { taluka: selectedTaluka }),
           ...(searchQuery && { search: searchQuery }),
         });
-        
+
         const response = await apiRequest(
           "GET",
           `/api/complaints?${params.toString()}`
@@ -128,6 +153,30 @@ export default function CommunitySection({
       if (currentPage === 1) {
         setAllComplaints(complaintsData.data.complaints);
         setHasMore(complaintsData.data.hasMore);
+      } else {
+        // For load more, append new complaints to existing ones
+        // setAllComplaints((prev) => [
+        //   ...prev,
+        //   ...complaintsData.data.complaints,
+        // ]);
+        setAllComplaints((prev) => {
+          // Create a map to track unique complaints by ID
+          const complaintMap = new Map();
+
+          // Add existing complaints to map
+          prev.forEach((complaint) => {
+            complaintMap.set(complaint.id, complaint);
+          });
+
+          // Add new complaints to map (this will overwrite duplicates)
+          complaintsData.data.complaints.forEach((complaint) => {
+            complaintMap.set(complaint.id, complaint);
+          });
+
+          // Convert map back to array
+          return Array.from(complaintMap.values());
+        });
+        setHasMore(complaintsData.data.hasMore);
       }
       // else {
       //   setAllComplaints((prev) => [
@@ -135,8 +184,10 @@ export default function CommunitySection({
       //     ...complaintsData.data.complaints,
       //   ]);
       // }
+      // Reset loading more state when data is received
+      setIsLoadingMore(false);
     }
-  }, [complaintsData]);
+  }, [complaintsData, currentPage]);
 
   // Reset to first page when filters change
   useEffect(() => {
@@ -209,47 +260,37 @@ export default function CommunitySection({
     },
 
     onMutate: async ({ shouldApprove, complaintId, userSlug }) => {
-      const queryKey = ["/api/complaints", userSlug];
+      // Store previous state for rollback
+      const prevComplaints = [...allComplaints];
 
-      await queryClient.cancelQueries({ queryKey });
-
-      const prevData = queryClient.getQueryData<{
-        data: { complaints: Complaint[] };
-      }>(queryKey);
-
-      queryClient.setQueryData(
-        queryKey,
-        (old: { data: { complaints: Complaint[] } }) => {
-          if (!old) return old;
-
-          const updatedComplaints = old.data.complaints.map((c) =>
-            c.id === complaintId
-              ? {
-                  ...c,
-                  isCoSigned: shouldApprove,
-                  coSignCount:
-                    c.coSignCount +
-                    (shouldApprove && !c.isCoSigned
-                      ? 1
-                      : !shouldApprove && c.isCoSigned
-                        ? -1
-                        : 0),
-                }
-              : c
-          );
-
-          return { ...old, data: { complaints: updatedComplaints } };
-        }
+      // Update local state immediately for better UX
+      setAllComplaints((prev) =>
+        prev.map((c) =>
+          c.id === complaintId
+            ? {
+                ...c,
+                isCoSigned: shouldApprove,
+                coSignCount:
+                  c.coSignCount +
+                  (shouldApprove && !c.isCoSigned
+                    ? 1
+                    : !shouldApprove && c.isCoSigned
+                      ? -1
+                      : 0),
+              }
+            : c
+        )
       );
 
-      return { prevData, queryKey };
+      return { prevComplaints };
     },
 
     onError: (err, _vars, context) => {
       console.error("Co-sign mutation error:", err);
       toast.error("Failed to co-sign complaint");
-      if (context?.prevData) {
-        queryClient.setQueryData(context.queryKey, context.prevData);
+      if (context?.prevComplaints) {
+        // Revert the local state
+        setAllComplaints(context.prevComplaints);
       }
     },
 
@@ -274,40 +315,34 @@ export default function CommunitySection({
       return response.json();
     },
     onMutate: async ({ userSlug, complaintId, reportReason, text }) => {
-      const queryKey = ["/api/complaints", userSlug];
-
-      await queryClient.cancelQueries({ queryKey });
-
-      const prevData = queryClient.getQueryData<{
-        data: { complaints: Complaint[] };
-      }>(queryKey);
+      // Store previous state for rollback
+      const prevComplaints = [...allComplaints];
       toast.success("Complaint reported.");
 
-      queryClient.setQueryData(
-        queryKey,
-        (old: { data: { complaints: Complaint[] } }) => {
-          if (!old) return old;
-
-          const updatedComplaints = old.data.complaints.map((c) =>
-            c.id === complaintId
-              ? {
-                  ...c,
-                  isReported: true,
-                }
-              : c
-          );
-
-          return { ...old, data: { complaints: updatedComplaints } };
-        }
+      // Update local state immediately
+      setAllComplaints((prev) =>
+        prev.map((c) =>
+          c.id === complaintId
+            ? {
+                ...c,
+                isReported: true,
+              }
+            : c
+        )
       );
 
-      return { prevData, queryKey };
+      return { prevComplaints };
     },
     onSuccess: (_data, { complaintId }) => {
       // queryClient.invalidateQueries({ queryKey: ["/api/complaints", user] });
     },
-    onError: () => {
-      // toast.error("Failed to report complaint.");
+    onError: (err, _vars, context) => {
+      console.error("Report mutation error:", err);
+      toast.error("Failed to report complaint.");
+      if (context?.prevComplaints) {
+        // Revert the local state
+        setAllComplaints(context.prevComplaints);
+      }
     },
   });
 
@@ -317,23 +352,26 @@ export default function CommunitySection({
     setIsLoadingMore(true);
     const nextPage = currentPage + 1;
 
-    try {
-      const response = await apiRequest(
-        "GET",
-        `/api/complaints?userSlug=${user}&&fetch=all${
-          compId ? `&&compId=${compId}` : ""
-        }&&page=${nextPage}&&limit=10`
-      );
-      const data = await response.json();
+    // try {
+    //   const response = await apiRequest(
+    //     "GET",
+    //     `/api/complaints?userSlug=${user}&&fetch=all${
+    //       compId ? `&&compId=${compId}` : ""
+    //     }&&page=${nextPage}&&limit=10`
+    //   );
+    //   const data = await response.json();
 
-      setAllComplaints((prev) => [...prev, ...data.data.complaints]);
-      setHasMore(data.data.hasMore);
-      setCurrentPage(nextPage);
-    } catch (error) {
-      toast.error("Failed to load more complaints");
-    } finally {
-      setIsLoadingMore(false);
-    }
+    //   setAllComplaints((prev) => [...prev, ...data.data.complaints]);
+    //   setHasMore(data.data.hasMore);
+    //   setCurrentPage(nextPage);
+    // } catch (error) {
+    //   toast.error("Failed to load more complaints");
+    // } finally {
+    //   setIsLoadingMore(false);
+    // }
+    setCurrentPage(nextPage);
+    // The query will automatically refetch due to currentPage change
+    // and the useEffect will append the new complaints
   };
 
   const handleCoSign = (complaintId: number) => {
@@ -437,7 +475,7 @@ export default function CommunitySection({
   //   return `${names[0].charAt(0)}${names[1].charAt(0)}`.toUpperCase();
   // };
 
-  if (isLoading && currentPage === 1 && selectedTaluka === "All Talukas" && searchQuery === "") {
+  if (isLoading && currentPage === 1) {
     return <Spinner blur />;
   }
 
@@ -463,7 +501,9 @@ export default function CommunitySection({
             className="flex items-center gap-2"
           >
             <Filter className="w-4 h-4" />
-            {showFilters ? translate("hide_filters", language) : translate("show_filters", language)}
+            {showFilters
+              ? translate("hide_filters", language)
+              : translate("show_filters", language)}
           </Button>
         </div>
       </div>
@@ -479,12 +519,16 @@ export default function CommunitySection({
               </label>
               <Select value={selectedTaluka} onValueChange={handleTalukaFilter}>
                 <SelectTrigger className="w-full">
-                  <SelectValue placeholder={translate("select_taluka", language)} />
+                  <SelectValue
+                    placeholder={translate("select_taluka", language)}
+                  />
                 </SelectTrigger>
                 <SelectContent className="bg-white">
                   {TALUKA_OPTIONS.map((taluka) => (
                     <SelectItem key={taluka} value={taluka}>
-                      {taluka === "All Talukas" ? translate("all_talukas", language) : taluka}
+                      {taluka === "All Talukas"
+                        ? translate("all_talukas", language)
+                        : taluka}
                     </SelectItem>
                   ))}
                 </SelectContent>
@@ -502,7 +546,7 @@ export default function CommunitySection({
                   value={searchInput}
                   onChange={(e) => setSearchInput(e.target.value)}
                   onKeyPress={(e) => {
-                    if (e.key === 'Enter') {
+                    if (e.key === "Enter") {
                       handleSearch();
                     }
                   }}
@@ -514,7 +558,7 @@ export default function CommunitySection({
                   className="bg-[#075E54] text-white hover:bg-[#075E54]/90"
                 >
                   {isSearching ? (
-                    <LoaderCircle  className="w-4 h-4 animate-spin" />
+                    <LoaderCircle className="w-4 h-4 animate-spin" />
                   ) : (
                     <Search className="w-4 h-4" />
                   )}
@@ -525,33 +569,61 @@ export default function CommunitySection({
 
           {/* Active Filters Display */}
           {(selectedTaluka !== "All Talukas" || searchQuery) && (
-            <div className="flex flex-wrap gap-2">
-              {selectedTaluka !== "All Talukas" && (
-                <Badge variant="secondary" className="bg-blue-100 text-blue-800 p-1">
-                  {translate("filter_by_taluka", language)}: {selectedTaluka}
-                  <button
-                    onClick={() => handleTalukaFilter("All Talukas")}
-                    className="ml-1 text-blue-600 hover:text-blue-800"
+            <div className="space-y-2">
+              <div className="flex items-center justify-between">
+                <span className="text-sm font-medium text-gray-700">
+                  {translate("active_filters", language)}
+                </span>
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={() => {
+                    setSelectedTaluka("All Talukas");
+                    setSearchQuery("");
+                    setSearchInput("");
+                    setCurrentPage(1);
+                    setShowFilters(false);
+                  }}
+                  className="text-xs h-7 px-2"
+                >
+                  <X className="w-3 h-3 mr-1" />
+                  {translate("clear_all", language)}
+                </Button>
+              </div>
+              <div className="flex flex-wrap gap-2">
+                {selectedTaluka !== "All Talukas" && (
+                  <Badge
+                    variant="secondary"
+                    className="bg-blue-100 text-blue-800 p-1"
                   >
-                    <X className="w-3 h-3" />
-                  </button>
-                </Badge>
-              )}
-              {searchQuery && (
-                <Badge variant="secondary" className="bg-green-100 text-green-800 p-1">
-                  {translate("search_complaints", language)}: "{searchQuery}"
-                  <button
-                    onClick={() => {
-                      setSearchQuery("");
-                      setSearchInput("");
-                      setCurrentPage(1);
-                    }}
-                    className="ml-1 text-green-600 hover:text-green-800"
+                    {translate("filter_by_taluka", language)}: {selectedTaluka}
+                    <button
+                      onClick={() => handleTalukaFilter("All Talukas")}
+                      className="ml-1 text-blue-600 hover:text-blue-800"
+                    >
+                      <X className="w-4 h-4 mt-0.5" />
+                    </button>
+                  </Badge>
+                )}
+                {searchQuery && (
+                  <Badge
+                    variant="secondary"
+                    className="bg-green-100 text-green-800 p-1"
                   >
-                    <X className="w-3 h-3 " />
-                  </button>
-                </Badge>
-              )}
+                    {translate("search_complaints", language)}: "{searchQuery}"
+                    <button
+                      onClick={() => {
+                        setSearchQuery("");
+                        setSearchInput("");
+                        setCurrentPage(1);
+                      }}
+                      className="ml-1 text-green-600 hover:text-green-800"
+                    >
+                      <X className="w-4 h-4 mt-0.5" />
+                    </button>
+                  </Badge>
+                )}
+              </div>
             </div>
           )}
         </div>
@@ -560,9 +632,10 @@ export default function CommunitySection({
       {/* Community Feed */}
       <div className="flex-1 overflow-y-auto">
         <div className="space-y-4 p-4">
-          {isLoading ? <LoaderCircle className="w-10 h-10 animate-spin absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 text-gray-500" /> : allComplaints.map((complaint) => (
+          {/* {isLoading ? <LoaderCircle className="w-10 h-10 animate-spin absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 text-gray-500" /> :  */}
+          {allComplaints.map((complaint, index) => (
             <CommunityComplaintCard
-              key={complaint.id}
+              key={`${complaint.id}-${index}`}
               complaint={complaint}
               handleCoSign={handleCoSign}
               isLoading={coSignMutation.isPending}
@@ -574,6 +647,27 @@ export default function CommunitySection({
               isAuthenticated={isUserAuthenticated}
             />
           ))}
+
+          {/* Show other complaints button when filters are active */}
+          {(selectedTaluka !== "All Talukas" || searchQuery) &&
+            allComplaints &&
+            allComplaints.length > 0 && (
+              <div className="flex justify-center pt-2">
+                <Button
+                  variant="outline"
+                  onClick={() => {
+                    setSelectedTaluka("All Talukas");
+                    setSearchQuery("");
+                    setSearchInput("");
+                    setCurrentPage(1);
+                    setShowFilters(false);
+                  }}
+                  className="border-[#075E54] bg-[#075E54] text-white"
+                >
+                  {translate("show_other_complaints", language)}
+                </Button>
+              </div>
+            )}
 
           {(!allComplaints || allComplaints.length === 0) && !isLoading && (
             <div className="text-center py-8">
@@ -590,16 +684,21 @@ export default function CommunitySection({
           )}
         </div>
 
-        {hasMore && allComplaints.length > 0 ? (
+        {hasMore && allComplaints && allComplaints.length > 0 ? (
           <div className="w-full flex justify-center">
             <Button
               className="w-9/12 m-auto my-5 mb-8  bg-[#075E54] text-white hover:bg-[#075E54]"
               onClick={loadMoreComplaints}
               disabled={isLoadingMore}
             >
-              {isLoadingMore
-                ? translate("loading_more_complaints", language)
-                : translate("load_more", language)}
+              {isLoadingMore ? (
+                <div className="flex items-center gap-2">
+                  <LoaderCircle className="w-4 h-4 animate-spin" />
+                  {translate("loading_more_complaints", language)}
+                </div>
+              ) : (
+                translate("load_more", language)
+              )}
             </Button>
           </div>
         ) : (

@@ -88,9 +88,28 @@ export const CommunityComplaintCard = ({
               </span>
             </div>
             <div>
-              <p className="font-medium text-sm ">
-                {generateComplaintIdFromDate(complaint.id, complaint.createdAt)}
-              </p>
+              <div className="flex items-center gap-2">
+                <p className="font-medium text-sm ">
+                  {generateComplaintIdFromDate(
+                    complaint.id,
+                    complaint.createdAt
+                  )}
+                </p>
+                {complaint.type && (
+                  <Badge
+                    variant="outline"
+                    className={`text-xs px-2 py-0.5 ${
+                      complaint.type === "SUGGESTION"
+                        ? "bg-orange-50 text-orange-700 border-orange-300"
+                        : "bg-blue-50 text-blue-700 border-blue-300"
+                    }`}
+                  >
+                    {complaint.type === "SUGGESTION"
+                      ? "Suggestion"
+                      : "Complaint"}
+                  </Badge>
+                )}
+              </div>
               <p className="text-xs ">
                 {/* Ward {Math.floor(Math.random() * 5) + 1} •{" "} */}
                 {formatTimeAgo(complaint.createdAt)}
@@ -173,7 +192,7 @@ export const CommunityComplaintCard = ({
               <Button
                 variant={complaint.isCoSigned ? "outline" : "default"}
                 size="sm"
-                className={`flex items-center space-x-1 w-1/2 ${
+                className={`flex items-center space-x-1 w-[calc(45%-5px)] ${
                   complaint.isCoSigned
                     ? "border-green-600 text-green-600 bg-green-50 hover:bg-green-100"
                     : "bg-green-600 text-white hover:bg-green-700 shadow-sm"
@@ -202,7 +221,7 @@ export const CommunityComplaintCard = ({
                 </span>
               </Button>
             ) : (
-              <div className="flex items-center space-x-1 text-gray-500 bg-gray-50 px-3 py-1.5 rounded-md w-[calc(50%-5px)]">
+              <div className="flex items-center space-x-1 text-gray-500 bg-gray-50 px-3 py-1.5 rounded-md w-[calc(45%-5px)]">
                 <ThumbsUp className="w-4 h-4" />
                 <span className="text-sm font-medium">
                   {translate("co_sign", language)} ({complaint.coSignCount})
@@ -245,7 +264,7 @@ export const CommunityComplaintCard = ({
               <Button
                 variant="outline"
                 size="sm"
-                className="bg-green-50 border-green-400 text-green-700 hover:bg-green-100 w-[calc(50%-5px)]"
+                className="bg-green-50 border-green-400 text-green-700 hover:bg-green-100 w-[calc(55%-5px)]"
                 onClick={() =>
                   window.open(
                     `https://api.whatsapp.com/send?text=${encodeURIComponent(

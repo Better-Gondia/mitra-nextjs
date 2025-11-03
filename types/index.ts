@@ -25,6 +25,7 @@ export interface User {
   age: number;
   gender: Gender;
   mobile: string;
+  slug: string;
   email?: string;
   address: string;
   ward?: string;
@@ -54,7 +55,7 @@ export interface Complaint {
   status: string;
   priority?: string | null;
   department?: string | null;
-  type?: string | null;
+  type: "SUGGESTION" | "COMPLAINT";
   language?: string | null;
 
   media?: MediaObject[];

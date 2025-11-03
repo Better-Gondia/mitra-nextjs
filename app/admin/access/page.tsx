@@ -45,6 +45,11 @@ export default function AdminAccessPage() {
   const [loading, setLoading] = useState(true);
   const [updatingId, setUpdatingId] = useState<number | null>(null);
 
+  // Get current user's ID
+  const currentUserId = session.data?.user?.id
+    ? parseInt(session.data.user.id)
+    : null;
+
   useEffect(() => {
     if (session.status === "loading") return;
     const userRole = session.data?.user?.role;
@@ -107,9 +112,9 @@ export default function AdminAccessPage() {
   };
 
   return (
-    <div className="min-h-[100dvh] bg-gradient-to-b from-[#f8fafc] to-[#e0e7ef] flex flex-col">
+    <div className="h-[100dvh] bg-gradient-to-b from-[#f8fafc] to-[#e0e7ef] flex flex-col overflow-hidden">
       {/* Sticky header */}
-      <header className="sticky top-0 z-20 bg-white/90 backdrop-blur border-b border-gray-200 px-4 py-3 flex items-center justify-between shadow-sm">
+      <header className="sticky top-0 z-20 bg-white/90 backdrop-blur border-b border-gray-200 px-4 py-3 flex items-center justify-between shadow-sm flex-shrink-0">
         <ArrowLeft onClick={() => router.back()} />
         <h1 className="text-lg font-bold tracking-tight">
           Google Users Management
@@ -117,22 +122,24 @@ export default function AdminAccessPage() {
         {/* <span className="text-xs text-gray-500 font-mono">Admin Panel</span> */}
         <AdminDropdown />
       </header>
-      <main className="flex-1 flex flex-col gap-4 p-2 pb-6 max-w-md w-full mx-auto">
+      <main className="flex-1 overflow-y-auto flex flex-col gap-4 max-w-md w-full mx-auto">
         {loading ? (
-          <Spinner className="text-black" />
+          <div className="flex-1 flex items-center justify-center p-4">
+            <Spinner className="text-black" />
+          </div>
         ) : users.length === 0 ? (
-          <div className="flex-1 flex flex-col items-center justify-center text-center text-gray-500 gap-2">
+          <div className="flex-1 flex flex-col items-center justify-center text-center text-gray-500 gap-2 p-4">
             <span className="text-5xl">👤</span>
             <span className="font-semibold">No Google users found</span>
           </div>
         ) : (
-          <div className="flex flex-col gap-3 mt-2">
+          <div className="flex flex-col gap-3 p-2 pb-24 mb-16">
             {users.map((user) => (
               <div
                 key={user.id}
                 className="rounded-xl bg-white shadow p-4 flex flex-col gap-2 border border-gray-100"
               >
-                <div className="flex items-center gap-3">
+                <div className="flex flex-col items-center gap-3">
                   <div className="flex-shrink-0 w-10 h-10 rounded-full bg-gradient-to-br from-blue-200 to-blue-400 flex items-center justify-center text-lg font-bold text-white">
                     {user.name?.[0] || "?"}
                   </div>
@@ -148,7 +155,8 @@ export default function AdminAccessPage() {
                     <select
                       value={user.role}
                       disabled={
-                        user.role === "SUPERADMIN" || updatingId === user.id
+                        updatingId === user.id ||
+                        !!(currentUserId && user.id === currentUserId)
                       }
                       onChange={(e) =>
                         handleRoleChange(user.id, e.target.value as Role)
@@ -171,12 +179,16 @@ export default function AdminAccessPage() {
                 </div>
                 {updatingId === user.id && (
                   <div className="flex gap-2 mt-1">
-                    <button
-                      className="flex-1 bg-gray-200 text-gray-500 rounded py-2 text-sm font-semibold cursor-not-allowed"
-                      disabled
-                    >
-                      Updating...
-                    </button>
+                    {updatingId === user.id && (
+                      <div className="flex gap-2 mt-1">
+                        <button
+                          className="flex-1 bg-gray-200 text-gray-500 rounded py-2 text-sm font-semibold cursor-not-allowed"
+                          disabled
+                        >
+                          Updating...
+                        </button>
+                      </div>
+                    )}
                   </div>
                 )}
               </div>
@@ -184,9 +196,6 @@ export default function AdminAccessPage() {
           </div>
         )}
       </main>
-      <footer className="mt-auto py-2 text-center text-xs text-gray-400">
-        &copy; {new Date().getFullYear()} Better Gondia
-      </footer>
     </div>
   );
 }

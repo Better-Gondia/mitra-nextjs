@@ -12,7 +12,11 @@ export const getComplaintById = async (
 
   try {
     const complaint = await prisma.complaint.findUnique({
-      where: { id: complaintId, isPublic: true },
+      where: {
+        id: complaintId,
+        isPublic: true,
+        phase: ComplaintPhase.COMPLETED,
+      },
       include: {
         user: {
           select: {
@@ -46,6 +50,7 @@ export const getComplaintById = async (
       coSignCount: complaint.coSignCount,
       isCoSigned: false,
       isReported: false,
+      type: complaint.type || "COMPLAINT",
       createdAt: complaint.createdAt.toISOString(),
       updatedAt: complaint.updatedAt.toISOString(),
       // messages: complaint.messages,
@@ -92,6 +97,8 @@ export const initializeComplaint = async (userId: number, mobileNo: string) => {
       userId: userId,
       phase: ComplaintPhase.INIT,
       language: Language.ENGLISH,
+      isPublic: true,
+      isMediaApproved: true,
     },
   });
   await sendTemplateMessage(mobileNo, process.env.LANGUAGE || "");

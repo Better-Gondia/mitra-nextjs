@@ -381,8 +381,8 @@
   },
   "better_gondia_mitra": {
     "english": "Better Gondia Mitra",
-    "hindi": "बेहतर गोंदिया मित्र",
-    "marathi": "बेहतर गोंदिया मित्र"
+    "hindi": "बैटर गोंदिया मित्र",
+    "marathi": "बैटर गोंदिया मित्र"
   },
   "making_gondia_better": {
     "english": "Making Gondia Better",
@@ -478,5 +478,20 @@
     "english": "Taluka",
     "hindi": "तालुका",
     "marathi": "तालुका"
+  },
+  "active_filters": {
+    "english": "Active Filters:",
+    "hindi": "सक्रिय फिल्टर:",
+    "marathi": "सक्रिय फिल्टर:"
+  },
+  "clear_all": {
+    "english": "Clear All",
+    "hindi": "सभी साफ करें",
+    "marathi": "सर्व साफ करा"
+  },
+  "show_other_complaints": {
+    "english": "Show other complaints",
+    "hindi": "अन्य शिकायतें दिखाएं",
+    "marathi": "इतर तक्रारी दाखवा"
   }
 }

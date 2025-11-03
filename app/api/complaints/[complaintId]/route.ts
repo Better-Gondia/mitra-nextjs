@@ -4,6 +4,7 @@ import { getServerSession } from "next-auth";
 import { authConfig } from "@/lib/auth";
 import type { session as AppSession } from "@/lib/auth";
 import { Complaint } from "@/types";
+import { ComplaintPhase } from "@prisma/client";
 
 export async function GET(
   req: NextRequest,
@@ -16,7 +17,11 @@ export async function GET(
 
   try {
     const complaint = await prisma.complaint.findUnique({
-      where: { id: complaintId, isPublic: true },
+      where: {
+        id: complaintId,
+        isPublic: true,
+        phase: ComplaintPhase.COMPLETED,
+      },
       include: {
         user: {
           select: {
@@ -39,14 +44,21 @@ export async function GET(
       title: complaint.title,
       description: complaint.description,
       category: complaint.category,
+      subcategory: complaint.subcategory,
       location: complaint.location,
       latitude: complaint.latitude,
       longitude: complaint.longitude,
       status: complaint.status,
+      taluka: complaint.taluka,
+      type: complaint.type,
+      priority: complaint.priority,
+      department: complaint.department,
+      language: complaint.language,
       media: complaint.media,
       isMediaApproved: complaint.isMediaApproved,
       isPublic: complaint.isPublic,
       coSignCount: complaint.coSignCount,
+      reportCount: complaint.reportCount,
       isCoSigned: false, // You can enhance this with session/user info
       isReported: false, // You can enhance this with session/user info
       createdAt: complaint.createdAt.toISOString(),

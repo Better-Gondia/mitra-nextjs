@@ -93,9 +93,40 @@ export default function HomeComp() {
     return (
       <OTPScreen
         mobile={pendingMobile}
-        onNext={(isNewUser) =>
-          handleAuthStepChange(isNewUser ? "profile" : "complete")
-        }
+        onNext={async (isNewUser) => {
+          // Handle redirect after OTP verification
+          if (!isNewUser) {
+            // For existing users, check if there's a pending complaint ID
+            const pendingComplaintId =
+              localStorage.getItem("pendingComplaintId");
+            if (pendingComplaintId) {
+              // Try to get user slug from localStorage or fetch it
+              const userDataStr = localStorage.getItem("userData");
+              let userSlug = null;
+
+              if (userDataStr) {
+                try {
+                  const userData = JSON.parse(userDataStr);
+                  userSlug = userData.slug;
+                } catch (e) {
+                  console.error("Error parsing user data", e);
+                }
+              }
+
+              // If we have both slug and complaint ID, redirect
+              if (userSlug) {
+                // Clear the pending complaint ID
+                localStorage.removeItem("pendingComplaintId");
+                // Redirect to home with userSlug and search params
+                if (typeof window !== "undefined") {
+                  window.location.href = `/?user=${userSlug}&&search=${pendingComplaintId}`;
+                  return;
+                }
+              }
+            }
+          }
+          handleAuthStepChange(isNewUser ? "profile" : "complete");
+        }}
         onBack={() => handleAuthStepChange("login")}
       />
     );

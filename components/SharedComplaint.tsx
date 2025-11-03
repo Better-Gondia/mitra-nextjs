@@ -32,6 +32,11 @@ export const SharedComplaint = ({ complaintId }: { complaintId: string }) => {
     setSection("community");
     setCompId(Number(givenCompId));
 
+    // Store complaint ID for post-login redirect
+    if (typeof window !== "undefined") {
+      localStorage.setItem("pendingComplaintId", givenCompId);
+    }
+
     const currentUserData = localStorage.getItem("userData");
 
     if (currentUserData) {
@@ -56,12 +61,13 @@ export const SharedComplaint = ({ complaintId }: { complaintId: string }) => {
 
   // Dummy handlers for required props
   const openLoginPortal = () => {
-    setIsOpen(true, "GoToHome");
+    // setIsOpen(true, "GoToHome");
+    setIsOpen(true, "MobileLookup");
   };
   const handleToggleVisibility = () => {};
 
   return (
-    <div className="max-w-xl mx-auto ">
+    <div className="max-w-xl mx-auto h-[100dvh] bg-white">
       <TopHeader isView />
       <CommunityComplaintCard
         complaint={complaint}

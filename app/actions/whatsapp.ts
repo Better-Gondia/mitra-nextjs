@@ -1,5 +1,6 @@
 "use server";
 
+import { messages } from "@/lib/clientUtils";
 import { Language } from "@prisma/client";
 import axios from "axios";
 import { NextResponse } from "next/server";
@@ -70,3 +71,12 @@ export const sendInvalidMessageTemplate = async (
     message: "Invalid Input",
   });
 };
+
+export const sendByeMessage = async(mobileNo: string, userMessage: "Bye For Now 👋🏻" | "फिर मिलेंगे 👋🏻" | "आत्तासाठी निरोप 👋") => {
+  const languageMap = {
+    "Bye For Now 👋🏻": Language.ENGLISH,
+    "फिर मिलेंगे 👋🏻": Language.HINDI,
+    "आत्तासाठी निरोप 👋": Language.MARATHI,
+  }
+  await sendWhatsAppText(mobileNo, messages[languageMap[userMessage]].BYE_FOR_NOW);
+}
