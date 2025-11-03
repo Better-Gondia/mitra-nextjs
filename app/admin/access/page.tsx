@@ -8,14 +8,35 @@ import { ArrowLeft } from "lucide-react";
 import { useRouter } from "nextjs-toploader/app";
 import { AdminDropdown } from "@/components/admin/AdminDropdown";
 import { appSession } from "@/lib/auth";
+import { Role } from "@prisma/client";
 
 interface User {
   id: number;
   name: string;
   email?: string;
-  role: "USER" | "ADMIN" | "SUPERADMIN";
+  role: Role;
   authType: "GOOGLE" | "DETAILS";
 }
+
+// All available roles except SUPERADMIN (which cannot be assigned)
+const assignableRoles: Role[] = [
+  "USER",
+  "ADMIN",
+  "COLLECTOR_TEAM",
+  "COLLECTOR_TEAM_ADVANCED",
+  "DEPARTMENT_TEAM",
+  "DISTRICT_COLLECTOR",
+  "SUPERINTENDENT_OF_POLICE",
+  "MP_RAJYA_SABHA",
+  "MP_LOK_SABHA",
+  "MLA_GONDIA",
+  "MLA_TIRORA",
+  "MLA_ARJUNI_MORGAON",
+  "MLA_AMGAON_DEORI",
+  "MLC",
+  "ZP_CEO",
+  "IFS",
+];
 
 export default function AdminAccessPage() {
   const session = useSession() as unknown as appSession;
@@ -53,10 +74,12 @@ export default function AdminAccessPage() {
       });
   }, [session.status]);
 
-  const handleRoleChange = async (
-    id: number,
-    newRole: "USER" | "ADMIN" | "SUPERADMIN"
-  ) => {
+  const handleRoleChange = async (id: number, newRole: Role) => {
+    // Prevent assigning SUPERADMIN role
+    if (newRole === "SUPERADMIN") {
+      toast.error("SUPERADMIN role cannot be assigned");
+      return;
+    }
     setUpdatingId(id);
     const toastId = toast.loading("Updating role...");
     try {
@@ -128,42 +151,34 @@ export default function AdminAccessPage() {
                         user.role === "SUPERADMIN" || updatingId === user.id
                       }
                       onChange={(e) =>
-                        handleRoleChange(
-                          user.id,
-                          e.target.value as User["role"]
-                        )
+                        handleRoleChange(user.id, e.target.value as Role)
                       }
-                      className="rounded px-2 py-1 border border-gray-300 text-xs focus:ring-2 focus:ring-blue-400 focus:outline-none bg-gray-50"
+                      className="rounded px-2 py-1 border border-gray-300 text-xs focus:ring-2 focus:ring-blue-400 focus:outline-none bg-gray-50 disabled:bg-gray-100 disabled:cursor-not-allowed min-w-[140px]"
                     >
-                      <option value="USER">USER</option>
-                      <option value="ADMIN">ADMIN</option>
-                      <option value="SUPERADMIN" disabled>
-                        SUPERADMIN
-                      </option>
+                      {user.role === "SUPERADMIN" ? (
+                        <option value="SUPERADMIN" disabled>
+                          SUPERADMIN (Protected)
+                        </option>
+                      ) : (
+                        assignableRoles.map((role) => (
+                          <option key={role} value={role}>
+                            {role.replace(/_/g, " ")}
+                          </option>
+                        ))
+                      )}
                     </select>
                   </div>
                 </div>
-                <div className="flex gap-2 mt-1">
-                  {updatingId === user.id ? (
+                {updatingId === user.id && (
+                  <div className="flex gap-2 mt-1">
                     <button
                       className="flex-1 bg-gray-200 text-gray-500 rounded py-2 text-sm font-semibold cursor-not-allowed"
                       disabled
                     >
                       Updating...
                     </button>
-                  ) : user.role !== "SUPERADMIN" && user.role !== "ADMIN" ? (
-                    <button
-                      className="flex-1 bg-blue-500 hover:bg-blue-600 text-white rounded py-2 text-sm font-semibold transition-colors"
-                      onClick={() => handleRoleChange(user.id, "ADMIN")}
-                    >
-                      Make Admin
-                    </button>
-                  ) : (
-                    <span className="flex-1 text-center text-xs text-gray-400 py-2">
-                      -
-                    </span>
-                  )}
-                </div>
+                  </div>
+                )}
               </div>
             ))}
           </div>

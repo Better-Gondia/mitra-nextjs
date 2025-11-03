@@ -30,6 +30,13 @@ export async function PATCH(req: NextRequest) {
   if (!id || !role) {
     return NextResponse.json({ error: "Missing id or role" }, { status: 400 });
   }
+  // Prevent assigning SUPERADMIN role
+  if (role === "SUPERADMIN") {
+    return NextResponse.json(
+      { error: "SUPERADMIN role cannot be assigned" },
+      { status: 400 }
+    );
+  }
   try {
     const updated = await prisma.user.update({
       where: { id: Number(id) },
