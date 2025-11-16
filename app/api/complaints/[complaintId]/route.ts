@@ -36,6 +36,26 @@ export async function GET(
       return Response.json({ error: "Complaint not found" }, { status: 404 });
     }
 
+    // Fetch public remarks for this complaint
+    const publicRemarks = await prisma.remark.findMany({
+      where: {
+        complaintId: complaint.id,
+        visibility: "PUBLIC",
+      },
+      include: {
+        user: {
+          select: {
+            id: true,
+            name: true,
+            role: true,
+          },
+        },
+      },
+      orderBy: {
+        createdAt: "asc",
+      },
+    });
+
     // Transform to match frontend expectations
     const transformedComplaint = {
       id: complaint.id,
@@ -61,6 +81,17 @@ export async function GET(
       reportCount: complaint.reportCount,
       isCoSigned: false, // You can enhance this with session/user info
       isReported: false, // You can enhance this with session/user info
+      publicRemarks: publicRemarks.map((remark) => ({
+        id: remark.id,
+        complaintId: remark.complaintId,
+        userId: remark.userId,
+        user: remark.user,
+        role: remark.role,
+        visibility: remark.visibility,
+        notes: remark.notes,
+        createdAt: remark.createdAt.toISOString(),
+        updatedAt: remark.updatedAt.toISOString(),
+      })),
       createdAt: complaint.createdAt.toISOString(),
       updatedAt: complaint.updatedAt.toISOString(),
     };

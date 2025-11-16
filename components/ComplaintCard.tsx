@@ -29,6 +29,7 @@ import {
 import { useState } from "react";
 import { translate } from "@/lib/translator";
 import { useLanguage } from "@/store/language";
+import { PublicRemarks } from "./PublicRemarks";
 
 interface ComplaintCardProps {
   complaint: Complaint;
@@ -299,14 +300,14 @@ export const ComplaintCard = ({ complaint }: ComplaintCardProps) => {
               )} */}
             </div>
 
-            <div className="flex gap-2">
+            <div className="flex flex-wrap gap-2">
               {complaint.media.map((media, index) => (
                 <div
                   key={index}
-                  className="relative group cursor-pointer"
+                  className="relative group cursor-pointer flex-shrink-0"
                   onClick={() => setSelectedMediaIndex(index)}
                 >
-                  <div className="aspect-video bg-white from-gray-50 to-gray-100 rounded-lg  flex items-center justify-center hover:border-gray-300 hover:shadow-md transition-all duration-200">
+                  <div className=" bg-white from-gray-50 to-gray-100 rounded-lg flex items-center justify-center hover:border-gray-300 hover:shadow-md transition-all duration-200 ">
                     {media.type === "image" ? (
                       <div className="text-center">
                         <div className="w-12 h-12 bg-blue-100 rounded-lg flex items-center justify-center  mx-auto">
@@ -443,6 +444,13 @@ export const ComplaintCard = ({ complaint }: ComplaintCardProps) => {
                   </div>
                 </div>
               )}
+          </div>
+        )}
+
+        {/* Public Remarks */}
+        {complaint.publicRemarks && complaint.publicRemarks.length > 0 && (
+          <div className="pt-3 pb-2 border-t border-gray-100">
+            <PublicRemarks remarks={complaint.publicRemarks} />
           </div>
         )}
 

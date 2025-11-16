@@ -493,5 +493,15 @@
     "english": "Show other complaints",
     "hindi": "अन्य शिकायतें दिखाएं",
     "marathi": "इतर तक्रारी दाखवा"
+  },
+  "public_remarks": {
+    "english": "Comments",
+    "hindi": "टिप्पणियाँ",
+    "marathi": "टिप्पण्या"
+  },
+  "official": {
+    "english": "Official",
+    "hindi": "अधिकारी",
+    "marathi": "अधिकारी"
   }
 }

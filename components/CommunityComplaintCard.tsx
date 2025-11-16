@@ -14,6 +14,7 @@ import { useEffect, useState } from "react";
 import { Checkbox } from "./Checkbox";
 import { translate } from "@/lib/translator";
 import { useLanguage } from "@/store/language";
+import { PublicRemarks } from "./PublicRemarks";
 
 interface CommunityComplaintCardProps {
   complaint: Complaint;
@@ -184,6 +185,13 @@ export const CommunityComplaintCard = ({
           </p>
         </div>
       )} */}
+
+        {/* Public Remarks */}
+        {complaint.publicRemarks && complaint.publicRemarks.length > 0 && (
+          <div className="mt-3 mb-3 pt-3 border-t border-gray-200">
+            <PublicRemarks remarks={complaint.publicRemarks} />
+          </div>
+        )}
 
         {/* Action Buttons */}
         <div className="flex flex-col items-center justify-between mt-3">
