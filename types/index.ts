@@ -40,6 +40,22 @@ export interface UserData {
   language: Language;
 }
 
+export interface Remark {
+  id: number;
+  complaintId: number;
+  userId: number;
+  user?: {
+    id: number;
+    name: string;
+    role: string;
+  };
+  role: string;
+  visibility: "PUBLIC" | "INTERNAL";
+  notes: string;
+  createdAt: string;
+  updatedAt: string;
+}
+
 export interface Complaint {
   id: number;
   complaintId: string;
@@ -67,6 +83,7 @@ export interface Complaint {
   isCoSigned: boolean;
   isReported: boolean;
   linkedComplaintIds?: string[];
+  publicRemarks?: Remark[];
 
   createdAt: string;
   updatedAt: string;

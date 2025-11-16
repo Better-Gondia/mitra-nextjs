@@ -213,6 +213,38 @@ export async function GET(req: NextRequest) {
       });
     }
 
+    // Fetch public remarks only when fetching "my complaints"
+    const remarksByComplaint = new Map<number, any[]>();
+    // if (fetchOption === "my" && complaints.length > 0) {
+    const complaintIds = complaints.map((c) => c.id);
+    const publicRemarks = await prisma.remark.findMany({
+      where: {
+        complaintId: { in: complaintIds },
+        visibility: "PUBLIC",
+      },
+      include: {
+        user: {
+          select: {
+            id: true,
+            name: true,
+            role: true,
+          },
+        },
+      },
+      orderBy: {
+        createdAt: "asc",
+      },
+    });
+
+    // Group remarks by complaintId
+    publicRemarks.forEach((remark) => {
+      if (!remarksByComplaint.has(remark.complaintId)) {
+        remarksByComplaint.set(remark.complaintId, []);
+      }
+      remarksByComplaint.get(remark.complaintId)!.push(remark);
+    });
+    // }
+
     // Create sets for fast lookup
     const userCoSignedComplaintIds = new Set(
       userInteractions
@@ -254,6 +286,19 @@ export async function GET(req: NextRequest) {
       reportCount: complaint.reportCount,
       isCoSigned: userCoSignedComplaintIds.has(complaint.id),
       isReported: userReportedComplaintIds.has(complaint.id),
+      publicRemarks: (remarksByComplaint.get(complaint.id) || []).map(
+        (remark) => ({
+          id: remark.id,
+          complaintId: remark.complaintId,
+          userId: remark.userId,
+          user: remark.user,
+          role: remark.role,
+          visibility: remark.visibility,
+          notes: remark.notes,
+          createdAt: remark.createdAt.toISOString(),
+          updatedAt: remark.updatedAt.toISOString(),
+        })
+      ),
 
       createdAt: complaint.createdAt.toISOString(),
       updatedAt: complaint.updatedAt.toISOString(),
