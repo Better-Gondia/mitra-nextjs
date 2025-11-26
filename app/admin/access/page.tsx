@@ -53,6 +53,11 @@ const assignableRoles: Role[] = [
   "FOREST_OFFICE_GONDIA",
   "SAMAJ_KALYAN_OFFICE_GONDIA",
   "SLR_OFFICE_GONDIA",
+  // New Departments Roles added: 24-11-2025
+  "RDC_GONDIA",
+  "DEPUTY_COLLECTOR_GENERAL_GONDIA",
+  "PO_OFFICE_DEORI",
+  "ST_DEPO_OFFICE_GONDIA",
 ];
 
 export default function AdminAccessPage() {
