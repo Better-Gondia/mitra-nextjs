@@ -19,7 +19,7 @@ import { Bug, ChartPie, EllipsisVertical, LogOut, Mail } from "lucide-react";
 import { signIn, signOut, useSession } from "next-auth/react";
 
 import { appSession } from "@/lib/auth";
-import { cn, isAdmin, resetApp } from "@/lib/clientUtils";
+import { cn, isAdmin } from "@/lib/clientUtils";
 import { useRouter } from "nextjs-toploader/app";
 import { useModal } from "@/store/modal";
 // import { clearStoredUserSlug } from "@/lib/slug-utils";
@@ -124,16 +124,6 @@ export function HeaderDropdown() {
             <Bug />
           </DropdownMenuItem>
         )}
-
-        <DropdownMenuItem
-          className="hover:bg-[#E5DDD5] flex justify-between"
-          onClick={() => {
-            resetApp();
-          }}
-        >
-          <span>Log out</span>
-          <LogOut />
-        </DropdownMenuItem>
         {session.status === "authenticated" &&
           session.data.user?.role == "SUPERADMIN" && (
             <>
